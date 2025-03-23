@@ -912,9 +912,130 @@ footer {
     display: none;
 }
 
-/* Кнопки всегда внизу */
+
 .crack-buttons {
     margin-top: 20px;
     display: flex;
     gap: 10px;
+}
+
+
+
+
+.boosters-section {
+    width: 100%;
+    margin: 40px 0;
+}
+
+.boosters-title {
+    font-size: 28px;
+    font-weight: 600;
+    text-align: center;
+    margin-bottom: 20px;
+    color: var(--text-primary);
+}
+
+.boosters-title span {
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.boosters-container {
+    width: 100%;
+    overflow: hidden;
+    background: none;
+    height: 150px;
+    display: flex;
+    align-items: center;
+    padding: 15px 0; 
+}
+
+.boosters-ticker {
+    display: flex;
+    animation: scroll 20s linear infinite; 
+    height: 100%;
+    white-space: nowrap; 
+}
+
+.booster-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--card-bg);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 15px;
+    padding: 10px;
+    margin: 0 15px;
+    width: 230px;
+    height: 130px; 
+    backdrop-filter: blur(10px);
+    transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.booster-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--accent);
+    box-shadow: var(--glow);
+}
+
+.booster-left {
+    display: flex;
+    align-items: center;
+}
+
+.booster-avatar {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    margin-right: 10px;
+    object-fit: cover;
+    border: 2px solid var(--accent);
+}
+
+.booster-right {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    color: var(--text-primary);
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.booster-username {
+    margin-right: 9px;
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.booster-count {
+    display: flex;
+    align-items: center;
+    color: var(--accent);
+}
+
+.booster-icon {
+    width: 16px;
+    height: 16px;
+    margin-right: 5px;
+    background: url('../images/boost.png') no-repeat center;
+    background-size: contain;
+}
+
+@keyframes scroll {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(-80%);
+    }
+}
+
+.boosters-ticker-clone {
+    display: flex;
+    height: 100%;
+    white-space: nowrap;
 }
