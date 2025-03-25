@@ -1498,42 +1498,94 @@ footer {
     border: 1px solid rgba(255, 255, 255, 0.05); /* Граница в твоём стиле */
 }
 
+/* Кастомный скроллбар */
+#leaks-list::-webkit-scrollbar {
+    height: 8px; /* Высота скроллбара */
+}
+
+#leaks-list::-webkit-scrollbar-track {
+    background: var(--darker-bg); /* Фон трека */
+    border-radius: 10px;
+}
+
+#leaks-list::-webkit-scrollbar-thumb {
+    background: var(--primary-gradient); /* Градиент для ползунка */
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 208, 255, 0.5); /* Глоу-эффект */
+}
+
+#leaks-list::-webkit-scrollbar-thumb:hover {
+    background: var(--accent); /* Цвет при наведении */
+}
+
 /* Стили для карточек leaks */
 .leak-item {
     display: inline-block; /* Карточки в ряд */
     vertical-align: top; /* Выравнивание по верху */
-    width: 250px; /* Фиксированная ширина карточки, чуть шире для читаемости */
-    min-height: 150px; /* Минимальная высота для консистентности */
-    background: rgba(255, 255, 255, 0.05); /* Как у tool-item и crack-item */
-    padding: 15px; /* Отступы как у других карточек */
-    border-radius: 10px; /* Скругление как у других элементов */
-    margin-right: 15px; /* Отступ между карточками */
-    transition: transform 0.3s ease, box-shadow 0.3s ease; /* Эффекты как у других карточек */
+    min-width: 300px; /* Увеличенная минимальная ширина */
+    width: auto; /* Адаптивная ширина под контент */
+    min-height: 200px; /* Увеличенная минимальная высота */
+    background: rgba(255, 255, 255, 0.05); /* Как у tool-item */
+    padding: 20px; /* Больше отступов */
+    border-radius: 10px; /* Скругление */
+    margin-right: 20px; /* Увеличенный отступ между карточками */
+    transition: transform 0.3s ease, box-shadow 0.3s ease; /* Эффекты */
 }
 
-/* Ховер-эффект в твоём стиле */
+/* Ховер-эффект */
 .leak-item:hover {
-    transform: translateY(-5px); /* Подъём как у других карточек */
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3); /* Тень как у tab-pane */
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
 }
 
 /* Заголовок leak */
 .leak-item p {
-    margin: 0 0 10px 0; /* Отступ под заголовок */
-    font-size: 16px; /* Как у tool-item */
-    color: var(--text-primary); /* Цвет текста */
-    font-weight: 500; /* Чуть жирнее для акцента */
+    margin: 0 0 10px 0;
+    font-size: 18px; /* Чуть больше для читаемости */
+    color: var(--text-primary);
+    font-weight: 500;
 }
 
-/* Данные leak */
+/* Данные leak — без скролла */
 .leak-item pre {
-    background: rgba(0, 0, 0, 0.2); /* Как в оригинале */
-    padding: 10px; /* Как в оригинале */
-    border-radius: 5px; /* Как в оригинале */
-    color: var(--text-secondary); /* Как в оригинале */
+    background: rgba(0, 0, 0, 0.2);
+    padding: 10px;
+    border-radius: 5px;
+    color: var(--text-secondary);
     white-space: pre-wrap; /* Перенос строк */
-    margin: 0; /* Убираем лишние отступы */
+    margin: 0;
     font-size: 14px; /* Как в оригинале */
-    max-height: 100px; /* Ограничение высоты с прокруткой */
-    overflow-y: auto; /* Внутренняя прокрутка для длинных данных */
+    word-wrap: break-word; /* Перенос длинных слов */
+}
+
+/* Адаптивность */
+@media (max-width: 1024px) {
+    .leak-item {
+        min-width: 250px; /* Уменьшаем на средних экранах */
+        min-height: 180px;
+    }
+}
+
+@media (max-width: 768px) {
+    .leak-item {
+        min-width: 200px; /* Ещё меньше на мобильных */
+        min-height: 160px;
+    }
+}
+
+@media (max-width: 576px) {
+    .leak-item {
+        min-width: 100%; /* На узких экранах — полная ширина */
+        margin-right: 10px; /* Меньший отступ */
+    }
+    #leaks-list {
+        white-space: normal; /* Переключаем на вертикальный список */
+        overflow-x: hidden; /* Убираем горизонтальную прокрутку */
+        overflow-y: auto; /* Включаем вертикальную */
+        max-height: 400px; /* Ограничение высоты для мобильных */
+    }
+    #leaks-list::-webkit-scrollbar {
+        width: 8px; /* Ширина для вертикального скролла */
+        height: auto;
+    }
 }
