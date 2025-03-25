@@ -7,24 +7,22 @@ document.addEventListener('DOMContentLoaded', async () => {
     const offlineMessage = document.getElementById('offline-message');
     const tabContent = document.querySelector('.tab-content');
 
-    // Проверка онлайна
     if (!navigator.onLine) {
         offlineMessage.classList.remove('hidden');
         tabContent.classList.add('hidden');
         return;
     }
 
-    // Проверка сессии через куки
-    const sessionToken = document.cookie.split('; ')
-        .find(row => row.startsWith('session_token='))
-        ?.split('=')[1];
-
-    if (!sessionToken) {
+    // Проверка сессии Supabase Auth
+    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+    if (sessionError || !session) {
+        console.error('No active session:', sessionError?.message);
         window.location.href = '/login.html';
         return;
     }
 
-    // Проверка в базе по id
+    const sessionToken = session.user.id; // Используем ID пользователя из сессии
+
     let userData;
     try {
         const { data, error } = await supabase
@@ -42,12 +40,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         console.error('Error fetching user:', err.message);
         offlineMessage.classList.remove('hidden');
         tabContent.classList.add('hidden');
-        document.cookie = 'session_token=; max-age=0; path=/';
+        await supabase.auth.signOut();
         window.location.href = '/login.html';
         return;
     }
 
-    // Заполнение данных
     document.getElementById('username-display').textContent = userData.username;
     document.getElementById('subscription-display').textContent = userData.subscription_status || 'Free Tier';
     document.getElementById('info-username').textContent = userData.username;
@@ -60,7 +57,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         document.getElementById('sponsor-banner').classList.remove('hidden');
     }
 
-    // Управление вкладками
     const tabs = document.querySelectorAll('.tab-btn');
     const panes = document.querySelectorAll('.tab-pane');
     const allowedTabs = {
@@ -100,13 +96,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     });
 
-    // Открываем Account по умолчанию
     if (userTabs.includes('account')) {
         console.log('Opening Account tab by default');
         switchTab('account');
     }
 
-    // Загрузка Leaks
     async function loadLeaks() {
         const { data, error } = await supabase.from('leaks').select('*');
         const leaksList = document.getElementById('leaks-list');
@@ -164,7 +158,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-    // Загрузка Special
     async function loadSpecialContent() {
         const { data, error } = await supabase.from('special').select('*');
         const specialList = document.getElementById('special-list');
@@ -191,7 +184,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // Управление вкладкой Special
     if (userTabs.includes('special')) {
         loadSpecialContent();
         if (userData.subscription_status === 'Developer') {
@@ -214,7 +206,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                     return;
                 }
 
-                // Загрузка изображения в Supabase Storage
                 const { data: fileData, error: uploadError } = await supabase.storage
                     .from('special-images')
                     .upload(`${Date.now()}-${file.name}`, file);
@@ -227,7 +218,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
                 const imageUrl = supabase.storage.from('special-images').getPublicUrl(fileData.path).data.publicUrl;
 
-                // Сохранение в таблицу special
                 const { error } = await supabase.from('special').insert({
                     name,
                     image_url: imageUrl,
@@ -246,7 +236,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-    // Download Buttons
     document.querySelectorAll('.download-btn').forEach(btn => {
         btn.addEventListener('click', () => {
             if (!btn.classList.contains('disabled')) {
@@ -255,22 +244,21 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     });
 
-    // Logout Button в Account
     document.getElementById('logout-btn').addEventListener('click', () => {
         document.cookie = 'session_token=; max-age=0; path=/';
         localStorage.removeItem('username');
+        supabase.auth.signOut();
         window.location.href = '/login.html';
     });
 
-    // Logout в навбаре
     document.getElementById('logout').addEventListener('click', (e) => {
         e.preventDefault();
         document.cookie = 'session_token=; max-age=0; path=/';
         localStorage.removeItem('username');
+        supabase.auth.signOut();
         window.location.href = '/login.html';
     });
 
-    // Проверка оффлайн-режима
     window.addEventListener('online', () => {
         offlineMessage.classList.add('hidden');
         tabContent.classList.remove('hidden');
