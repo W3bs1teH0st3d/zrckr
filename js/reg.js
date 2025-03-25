@@ -16,8 +16,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const data = await response.json();
             return data.ip;
         } catch (error) {
-            console.error('Error fetching IP:', error);
-            return null;
+            console.error('Failed to fetch IP:', error);
+            return null; // Если IP не удалось получить, продолжаем без строгой блокировки
         }
     }
 
@@ -47,22 +47,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Получаем IP клиента
         const clientIp = await getClientIp();
-        if (!clientIp) {
-            return { success: false, message: 'Could not determine your IP address.' };
-        }
+        if (clientIp) { // Проверяем IP только если он получен
+            const { data: ipCheck, error: ipError } = await supabase
+                .from('ip_addresses')
+                .select('ip_address')
+                .eq('ip_address', clientIp)
+                .single();
 
-        // Проверяем, есть ли уже аккаунт с этим IP
-        const { data: ipCheck, error: ipError } = await supabase
-            .from('users')
-            .select('ip_address')
-            .eq('ip_address', clientIp)
-            .single();
-
-        if (ipError && ipError.code !== 'PGRST116') {
-            return { success: false, message: 'Error checking IP: ' + ipError.message };
-        }
-        if (ipCheck) {
-            return { success: false, message: 'Only one account per IP is allowed!' };
+            if (ipError && ipError.code !== 'PGRST116') {
+                console.error('IP check failed:', ipError.message);
+                // Не блокируем, если проверка IP сломалась, чтобы не ломать регистрацию
+            } else if (ipCheck) {
+                return { success: false, message: 'Only one account per IP is allowed!' };
+            }
         }
 
         const doubleHashedPassword = await hashPassword(password);
@@ -98,7 +95,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Генерируем свой ID
         const userId = crypto.randomUUID();
 
-        // Вставка в таблицу users с IP
+        // Вставка в таблицу users
         const { error: dbError } = await supabase
             .from('users')
             .insert({
@@ -106,13 +103,27 @@ document.addEventListener('DOMContentLoaded', () => {
                 username,
                 email,
                 password: doubleHashedPassword,
-                ip_address: clientIp, // Добавляем IP в запись
                 subscription_status: 'Free Tier',
                 subscription_expiry: null
             });
 
         if (dbError) {
             return { success: false, message: 'Database error: ' + dbError.message };
+        }
+
+        // Вставка IP в таблицу ip_addresses, если IP получен
+        if (clientIp) {
+            const { error: ipInsertError } = await supabase
+                .from('ip_addresses')
+                .insert({
+                    ip_address: clientIp,
+                    user_id: userId
+                });
+
+            if (ipInsertError) {
+                console.error('Failed to save IP:', ipInsertError.message);
+                // Не прерываем регистрацию, если IP не сохранился
+            }
         }
 
         // Сохраняем сессию вручную
