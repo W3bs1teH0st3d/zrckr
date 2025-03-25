@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return { success: false, message: 'Invalid input! Avoid <, >, ;, etc.' };
         }
 
-        const fakeEmail = `${username.toLowerCase()}@zerocrackz.fake`;
+        const fakeEmail = `${username.toLowerCase()}@zerocrackz.com`; // Валидный домен
 
         // Проверяем уникальность username
         const { data: usernameCheck, error: usernameError } = await supabase
@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
             .eq('username', username)
             .single();
 
-        if (usernameError && usernameError.code !== 'PGRST116') {
+        if (usernameError && usernameError.code !== 'PGRST116') { // PGRST116 — нет строк
             return { success: false, message: 'Error checking username: ' + usernameError.message };
         }
         if (usernameCheck) {
@@ -73,7 +73,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return { success: false, message: 'Invalid input! Avoid <, >, ;, etc.' };
         }
 
-        const fakeEmail = `${username.toLowerCase()}@gmail.com`;
+        const fakeEmail = `${username.toLowerCase()}@zerocrackz.com`;
 
         // Логин через Supabase Auth
         const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
