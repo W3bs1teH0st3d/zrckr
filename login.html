@@ -18,11 +18,11 @@
                 <h1>ZeroCrackz</h1>
             </div>
             <div class="nav-links">
-                <a href="index">Home</a>
-                <a href="cracks">Cracks</a>
-                <a href="qanda">Q&A</a>
-                <a href="socials">Socials</a>
-                <a href="userpanel">UserPanel</a>
+                <a href="index.html">Home</a>
+                <a href="cracks.html">Cracks</a>
+                <a href="qanda.html">Q&A</a>
+                <a href="socials.html">Socials</a>
+                <a href="login.html">Login</a>
             </div>
             <div class="mobile-menu-btn">
                 <i class="fas fa-bars"></i>
@@ -38,7 +38,7 @@
                 <form id="login-form" class="login-form">
                     <div class="input-group">
                         <i class="fas fa-user"></i>
-                        <input type="text" placeholder="Username" required>
+                        <input type="text" placeholder="Username or Email" id="login" required>
                     </div>
                     <div class="input-group">
                         <i class="fas fa-lock"></i>
@@ -82,15 +82,18 @@
 
             loginForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
-                const username = document.querySelector('#login-form input[type="text"]').value.trim();
-                const password = document.querySelector('#login-form input[type="password"]').value.trim();
+                const login = document.getElementById('login').value.trim();
+                const password = document.getElementById('password-input').value.trim();
+
+                console.log('Trying to login with:', { login, password }); // Для отладки
 
                 btnText.classList.add('hidden');
                 spinner.classList.remove('hidden');
                 loginBtn.classList.add('disabled');
                 errorMessage.textContent = '';
 
-                const result = await window.loginUser(username, password);
+                const result = await window.loginUser(login, password);
+                console.log('Login result:', result); // Для отладки
                 if (result.success) {
                     window.location.href = '/userpanel.html';
                 } else {
