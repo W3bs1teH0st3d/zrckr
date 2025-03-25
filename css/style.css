@@ -1590,7 +1590,77 @@ footer {
     }
 }
 
-/* Форма special */
+
+
+/* Список Special */
+#special-list {
+    width: 100%;
+    padding: 15px;
+    background: var(--card-bg);
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    max-height: 400px; /* Ограничим высоту с прокруткой */
+    overflow-y: auto; /* Вертикальная прокрутка */
+    overflow-x: hidden; /* Без горизонтальной прокрутки */
+}
+
+/* Кастомный скроллбар */
+#special-list::-webkit-scrollbar {
+    width: 8px;
+}
+
+#special-list::-webkit-scrollbar-track {
+    background: var(--darker-bg);
+    border-radius: 10px;
+}
+
+#special-list::-webkit-scrollbar-thumb {
+    background: var(--primary-gradient);
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 208, 255, 0.5);
+}
+
+#special-list::-webkit-scrollbar-thumb:hover {
+    background: var(--accent);
+}
+
+/* Элементы списка Special */
+.special-item {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    border: 1px solid rgba(255, 255, 255, 0.1); /* Обводка */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.special-item:last-child {
+    margin-bottom: 0; /* Убираем отступ у последнего элемента */
+}
+
+.special-item:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+/* Заголовок Special */
+.special-item p {
+    margin: 0 0 10px 0;
+    font-size: 16px;
+    color: var(--text-primary);
+    font-weight: 500;
+}
+
+/* Изображение Special */
+.special-item img {
+    width: 100%;
+    height: 150px; /* Фиксированная высота */
+    object-fit: cover; /* Обрезка без искажений */
+    border-radius: 5px;
+    border: 1px solid rgba(255, 255, 255, 0.2); /* Обводка изображения */
+}
+
+/* Форма Special (оставляем как есть, но добавим немного стиля) */
 #special-form {
     margin-top: 20px;
     background: var(--card-bg);
@@ -1607,131 +1677,15 @@ footer {
     font-weight: 600;
 }
 
-/* Кастомное поле ввода special-name */
-#special-form .input-group {
-    position: relative;
-    margin-bottom: 15px;
-}
-
-#special-form #special-name {
-    width: 100%;
-    padding: 12px 12px 12px 40px; /* Отступ слева для иконки */
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 8px;
-    background: var(--darker-bg);
-    color: var(--text-primary);
-    font-size: 14px;
-    outline: none;
-    transition: border-color 0.3s ease, box-shadow 0.3s ease;
-}
-
-#special-form #special-name:focus {
-    border-color: var(--accent);
-    box-shadow: var(--glow);
-}
-
-#special-form #special-name::placeholder {
-    color: var(--text-secondary);
-    opacity: 0.7;
-}
-
-#special-form .input-group i.fa-star {
-    position: absolute;
-    left: 12px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: var(--text-secondary);
-    font-size: 16px;
-    transition: color 0.3s ease;
-}
-
-#special-form #special-name:focus + i,
-#special-form #special-name:not(:placeholder-shown) + i {
-    color: var(--accent);
-}
-
-/* Кастомная кнопка для изображения */
-#special-form .btn-image {
-    width: 100%;
-    padding: 12px;
-    background: var(--primary-gradient);
-    color: white;
-    border: none;
-    border-radius: 8px;
-    font-size: 14px;
-    font-weight: 500;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-#special-form .btn-image i {
-    font-size: 16px;
-}
-
-#special-form .btn-image:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 0 25px rgba(0, 208, 255, 0.7);
-}
-
-#special-form .btn-image:active {
-    transform: translateY(0);
-    box-shadow: 0 0 15px rgba(0, 208, 255, 0.5);
-}
-
-/* Кнопка Add Special */
-#special-form #add-special-btn {
-    width: 100%;
-    padding: 12px;
-    background: var(--secondary-gradient);
-    color: white;
-    border: none;
-    border-radius: 8px;
-    font-size: 16px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    position: relative;
-    overflow: hidden;
-}
-
-#special-form #add-special-btn:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 0 25px rgba(255, 41, 112, 0.7);
-}
-
-#special-form #add-special-btn::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 0;
-    height: 0;
-    background: rgba(255, 255, 255, 0.2);
-    border-radius: 50%;
-    transform: translate(-50%, -50%);
-    transition: width 0.5s ease, height 0.5s ease;
-}
-
-#special-form #add-special-btn:hover::after {
-    width: 200%;
-    height: 200%;
-}
-
 /* Адаптивность */
 @media (max-width: 576px) {
-    #special-form {
-        padding: 15px;
+    #special-list {
+        padding: 10px;
     }
-    #special-form h3 {
-        font-size: 18px;
+    .special-item {
+        padding: 10px;
     }
-    #special-form #special-name,
-    #special-form .btn-image,
-    #special-form #add-special-btn {
-        font-size: 13px;
+    .special-item img {
+        height: 120px; /* Уменьшаем высоту на мобильных */
     }
 }
