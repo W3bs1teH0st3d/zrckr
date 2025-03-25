@@ -1053,7 +1053,17 @@ footer {
     padding-top: var(--nav-height);
 }
 
-.login-card {
+/* Register Section */
+.register-section {
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-top: var(--nav-height);
+}
+
+/* Общий стиль для карточек */
+.login-card, .register-card {
     background: var(--card-bg);
     border-radius: 15px;
     padding: 40px;
@@ -1066,31 +1076,32 @@ footer {
     transition: transform 0.3s ease;
 }
 
-.login-card:hover {
+.login-card:hover, .register-card:hover {
     transform: translateY(-5px);
 }
 
-.login-card h1 {
+.login-card h1, .register-card h1 {
     font-size: 36px;
     font-weight: 700;
     margin-bottom: 15px;
 }
 
-.login-card h1 span {
+.login-card h1 span, .register-card h1 span {
     background: var(--primary-gradient);
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
 }
 
-.login-card p {
+.login-card p, .register-card p {
     font-size: 16px;
     color: var(--text-secondary);
     margin-bottom: 30px;
     line-height: 1.6;
 }
 
-.login-form, .register-form { /* Добавлен .register-form */
+/* Формы */
+.login-form, .register-form {
     display: flex;
     flex-direction: column;
     gap: 20px;
@@ -1102,9 +1113,9 @@ footer {
     align-items: center;
 }
 
-.login-form input, .register-form input { /* Добавлен .register-form */
+.login-form input, .register-form input {
     width: 100%;
-    padding: 12px 40px 12px 40px; /* Увеличен правый padding для глаза */
+    padding: 12px 40px 12px 40px; /* Отступы для иконок слева и справа */
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 8px;
     background: var(--darker-bg);
@@ -1124,6 +1135,37 @@ footer {
     opacity: 0.7;
 }
 
+/* Единый стиль для всех иконок в input-group */
+.input-group i {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-secondary);
+    font-size: 16px;
+    width: 16px; /* Фиксированная ширина для единообразия */
+    text-align: center;
+    transition: color 0.3s ease;
+}
+
+/* Иконка toggle-password */
+.input-group .toggle-password {
+    left: auto;
+    right: 15px;
+    cursor: pointer;
+}
+
+.login-form input:focus + i, .register-form input:focus + i,
+.login-form input:not(:placeholder-shown) + i, .register-form input:not(:placeholder-shown) + i {
+    color: var(--accent);
+}
+
+.input-group .toggle-password:hover,
+.input-group .toggle-password.active {
+    color: var(--accent);
+}
+
+/* Кнопки */
 .login-form .btn-primary, .register-form .btn-primary {
     padding: 12px;
     font-size: 16px;
@@ -1136,7 +1178,8 @@ footer {
     box-shadow: 0 0 25px rgba(0, 208, 255, 0.7);
 }
 
-.login-footer, .register-footer { /* Добавлен .register-footer */
+/* Футер */
+.login-footer, .register-footer {
     margin-top: 20px;
     font-size: 14px;
     color: var(--text-secondary);
@@ -1152,38 +1195,7 @@ footer {
     color: var(--accent-alt);
 }
 
-/* Login Enhancements */
-.input-group i.fa-lock, .input-group i.fa-user { /* Уточняем для разных иконок */
-    position: absolute;
-    left: 15px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: var(--text-secondary);
-    font-size: 16px;
-    transition: color 0.3s ease;
-}
-
-.input-group .toggle-password {
-    position: absolute;
-    right: 15px; /* Глаз справа */
-    top: 50%;
-    transform: translateY(-50%);
-    color: var(--text-secondary);
-    font-size: 16px;
-    cursor: pointer;
-    transition: color 0.3s ease;
-}
-
-.login-form input:focus + i, .register-form input:focus + i,
-.login-form input:not(:placeholder-shown) + i, .register-form input:not(:placeholder-shown) + i {
-    color: var(--accent);
-}
-
-.input-group .toggle-password:hover,
-.input-group .toggle-password.active {
-    color: var(--accent);
-}
-
+/* Спиннер в кнопке */
 .btn .fa-spinner {
     margin-left: 10px;
 }
@@ -1216,32 +1228,6 @@ footer {
     background: linear-gradient(to right, rgba(255, 255, 255, 0.2), transparent);
     animation: dustFade 0.5s ease forwards;
     pointer-events: none;
-}
-
-/* Дополнительно для register-section, чтобы совпадало с login-section */
-.register-section {
-    height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding-top: var(--nav-height);
-}
-
-.register-card {
-    background: var(--card-bg);
-    border-radius: 15px;
-    padding: 40px;
-    width: 100%;
-    max-width: 400px;
-    text-align: center;
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(10px);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-    transition: transform 0.3s ease;
-}
-
-.register-card:hover {
-    transform: translateY(-5px);
 }
 
 
