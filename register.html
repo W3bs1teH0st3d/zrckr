@@ -18,11 +18,11 @@
                 <h1>ZeroCrackz</h1>
             </div>
             <div class="nav-links">
-                <a href="index">Home</a>
-                <a href="cracks">Cracks</a>
-                <a href="qanda">Q&A</a>
-                <a href="socials">Socials</a>
-                <a href="userpanel">UserPanel</a>
+                <a href="index.html">Home</a>
+                <a href="cracks.html">Cracks</a>
+                <a href="qanda.html">Q&A</a>
+                <a href="socials.html">Socials</a>
+                <a href="login.html">Login</a>
             </div>
             <div class="mobile-menu-btn">
                 <i class="fas fa-bars"></i>
@@ -41,14 +41,13 @@
                         <input type="text" placeholder="Username" id="username" required>
                     </div>
                     <div class="input-group">
-                        <i class="fas fa-lock"></i>
-                        <input type="password" placeholder="Password" id="password" required>
-                        <i class="fas fa-eye toggle-password" id="toggle-password"></i>
+                        <i class="fas fa-envelope"></i> <!-- Иконка для email -->
+                        <input type="email" placeholder="Email" id="email" required>
                     </div>
                     <div class="input-group">
                         <i class="fas fa-lock"></i>
-                        <input type="password" placeholder="Backup Password" id="password2" required>
-                        <i class="fas fa-eye toggle-password" id="toggle-password2"></i>
+                        <input type="password" placeholder="Password" id="password" required>
+                        <i class="fas fa-eye toggle-password" id="toggle-password"></i>
                     </div>
                     <p id="register-error" class="error-message"></p>
                     <button type="submit" class="btn btn-primary" id="register-btn">
@@ -71,9 +70,7 @@
             const spinner = registerBtn.querySelector('.fa-spinner');
             const errorMessage = document.getElementById('register-error');
             const passwordInput = document.getElementById('password');
-            const password2Input = document.getElementById('password2');
             const togglePassword = document.getElementById('toggle-password');
-            const togglePassword2 = document.getElementById('toggle-password2');
 
             togglePassword.addEventListener('click', () => {
                 const isPassword = passwordInput.type === 'password';
@@ -87,33 +84,20 @@
                 }
             });
 
-            togglePassword2.addEventListener('click', () => {
-                const isPassword = password2Input.type === 'password';
-                password2Input.type = isPassword ? 'text' : 'password';
-                togglePassword2.classList.toggle('active');
-                togglePassword2.classList.toggle('fa-eye');
-                togglePassword2.classList.toggle('fa-eye-slash');
-                if (isPassword) {
-                    password2Input.classList.add('password-reveal');
-                    setTimeout(() => password2Input.classList.remove('password-reveal'), 500);
-                }
-            });
-
             registerForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
                 const username = document.getElementById('username').value.trim();
+                const email = document.getElementById('email').value.trim();
                 const password = document.getElementById('password').value.trim();
-                const password2 = document.getElementById('password2').value.trim();
 
                 btnText.classList.add('hidden');
                 spinner.classList.remove('hidden');
                 registerBtn.classList.add('disabled');
                 errorMessage.textContent = '';
 
-                const result = await window.registerUser(username, password, password2);
+                const result = await window.registerUser(username, email, password);
                 if (result.success) {
-                    const sessionHash = localStorage.getItem('user_session');
-                    window.location.href = `/userpanel.html?hash=${sessionHash}`;
+                    window.location.href = '/userpanel.html';
                 } else {
                     errorMessage.textContent = result.message;
                     btnText.classList.remove('hidden');
