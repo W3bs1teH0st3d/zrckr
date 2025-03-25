@@ -11,13 +11,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function hashPassword(password) {
         const encoder = new TextEncoder();
-        // Первый хэш
         const data1 = encoder.encode(password);
         const hash1 = await crypto.subtle.digest('SHA-256', data1);
         const hash1Hex = Array.from(new Uint8Array(hash1))
             .map(b => b.toString(16).padStart(2, '0'))
             .join('');
-        // Второй хэш
         const data2 = encoder.encode(hash1Hex);
         const hash2 = await crypto.subtle.digest('SHA-256', data2);
         return Array.from(new Uint8Array(hash2))
@@ -65,18 +63,8 @@ document.addEventListener('DOMContentLoaded', () => {
             return { success: false, message: 'Email already registered' };
         }
 
-        // Регистрация через Supabase Auth
-        const { data: authData, error: authError } = await supabase.auth.signUp({
-            email,
-            password,
-            options: { data: { username } }
-        });
-
-        if (authError) {
-            return { success: false, message: 'Registration failed: ' + authError.message };
-        }
-
-        const userId = authData.user.id;
+        // Генерируем свой ID
+        const userId = crypto.randomUUID();
 
         // Вставка в таблицу users
         const { error: dbError } = await supabase
@@ -94,34 +82,25 @@ document.addEventListener('DOMContentLoaded', () => {
             return { success: false, message: 'Database error: ' + dbError.message };
         }
 
-        // Логиним сразу после регистрации
-        const { error: loginError } = await supabase.auth.signInWithPassword({
-            email,
-            password
-        });
-
-        if (loginError) {
-            return { success: false, message: 'Auto-login failed: ' + loginError.message };
-        }
-
+        // Сохраняем сессию вручную
         document.cookie = `session_token=${userId}; max-age=31536000; path=/`;
         localStorage.setItem('username', username);
 
         return { success: true, message: 'Registration successful!' };
     }
 
-    async function loginUser(email, password) {
-        if (!sanitizeInput(email) || !sanitizeInput(password)) {
+    async function loginUser(login, password) {
+        if (!sanitizeInput(login) || !sanitizeInput(password)) {
             return { success: false, message: 'Invalid input! Avoid <, >, ;, etc.' };
         }
 
         const doubleHashedPassword = await hashPassword(password);
 
-        // Проверяем пользователя
+        // Проверяем по username или email
         const { data, error } = await supabase
             .from('users')
             .select('id, username, email, password')
-            .eq('email', email)
+            .or(`username.eq.${login},email.eq.${login}`)
             .single();
 
         if (error || !data) {
@@ -132,16 +111,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return { success: false, message: 'Invalid password' };
         }
 
-        // Логиним через Supabase Auth
-        const { error: authError } = await supabase.auth.signInWithPassword({
-            email,
-            password
-        });
-
-        if (authError) {
-            return { success: false, message: 'Login failed: ' + authError.message };
-        }
-
+        // Сохраняем сессию вручную
         document.cookie = `session_token=${data.id}; max-age=31536000; path=/`;
         localStorage.setItem('username', data.username);
 
