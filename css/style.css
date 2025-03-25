@@ -1484,34 +1484,56 @@ footer {
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
 }
 
+
+
+/* Горизонтальная прокрутка для leaks */
 #leaks-list {
-    max-width: 100%; /* Ограничиваем ширину контейнера под родительский элемент */
+    max-width: 100%;
     overflow-x: auto; /* Горизонтальная прокрутка */
     overflow-y: hidden; /* Убираем вертикальную прокрутку */
     white-space: nowrap; /* Элементы в ряд */
-    padding: 10px; /* Внутренний отступ */
-    border: 1px solid #ccc; /* Рамка для выделения области */
+    padding: 15px; /* Отступы в стиле твоих карточек */
+    background: var(--card-bg); /* Фон как у tab-pane */
+    border-radius: 10px; /* Скругление как у других элементов */
+    border: 1px solid rgba(255, 255, 255, 0.05); /* Граница в твоём стиле */
 }
 
+/* Стили для карточек leaks */
 .leak-item {
     display: inline-block; /* Карточки в ряд */
     vertical-align: top; /* Выравнивание по верху */
-    width: 200px; /* Фиксированная ширина карточки */
+    width: 250px; /* Фиксированная ширина карточки, чуть шире для читаемости */
+    min-height: 150px; /* Минимальная высота для консистентности */
+    background: rgba(255, 255, 255, 0.05); /* Как у tool-item и crack-item */
+    padding: 15px; /* Отступы как у других карточек */
+    border-radius: 10px; /* Скругление как у других элементов */
     margin-right: 15px; /* Отступ между карточками */
-    padding: 10px; /* Внутренний отступ карточки */
-    background-color: #f9f9f9; /* Лёгкий фон для красоты */
-    border-radius: 5px; /* Скруглённые углы */
+    transition: transform 0.3s ease, box-shadow 0.3s ease; /* Эффекты как у других карточек */
 }
 
+/* Ховер-эффект в твоём стиле */
+.leak-item:hover {
+    transform: translateY(-5px); /* Подъём как у других карточек */
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3); /* Тень как у tab-pane */
+}
+
+/* Заголовок leak */
 .leak-item p {
-    margin: 0 0 5px 0; /* Отступ под заголовок */
-    font-weight: bold; /* Жирный шрифт для имени */
+    margin: 0 0 10px 0; /* Отступ под заголовок */
+    font-size: 16px; /* Как у tool-item */
+    color: var(--text-primary); /* Цвет текста */
+    font-weight: 500; /* Чуть жирнее для акцента */
 }
 
+/* Данные leak */
 .leak-item pre {
-    margin: 0; /* Убираем отступы у pre */
-    white-space: pre-wrap; /* Перенос строк в данных */
-    font-size: 12px; /* Чуть меньше шрифт для данных */
-    max-height: 100px; /* Ограничиваем высоту текста внутри карточки */
+    background: rgba(0, 0, 0, 0.2); /* Как в оригинале */
+    padding: 10px; /* Как в оригинале */
+    border-radius: 5px; /* Как в оригинале */
+    color: var(--text-secondary); /* Как в оригинале */
+    white-space: pre-wrap; /* Перенос строк */
+    margin: 0; /* Убираем лишние отступы */
+    font-size: 14px; /* Как в оригинале */
+    max-height: 100px; /* Ограничение высоты с прокруткой */
     overflow-y: auto; /* Внутренняя прокрутка для длинных данных */
 }
