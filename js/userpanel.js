@@ -64,10 +64,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     const tabs = document.querySelectorAll('.tab-btn');
     const panes = document.querySelectorAll('.tab-pane');
     const allowedTabs = {
-        'Developer': ['account', 'tools', 'cracks', 'leaks', 'logs'],
+        'Developer': ['account', 'tools', 'cracks', 'leaks', 'special', 'logs'],
         'Premium': ['account', 'tools', 'cracks'],
         'Booster': ['account', 'tools', 'cracks', 'leaks'],
-        'Sponsor': ['account', 'tools', 'cracks', 'leaks'],
+        'Sponsor': ['account', 'tools', 'cracks', 'leaks', 'special'],
         'Free Tier': ['account', 'tools']
     };
     const userTabs = allowedTabs[userData.subscription_status] || allowedTabs['Free Tier'];
@@ -159,6 +159,80 @@ document.addEventListener('DOMContentLoaded', async () => {
                     document.getElementById('leak-name').value = '';
                     document.getElementById('leak-data').value = '';
                     loadLeaks();
+                }
+            });
+        }
+    }
+
+    // Загрузка Special
+    async function loadSpecialContent() {
+        const { data, error } = await supabase.from('special').select('*');
+        const specialList = document.getElementById('special-list');
+        specialList.innerHTML = '';
+
+        if (error) {
+            console.error('Error loading special content:', error.message);
+            specialList.innerHTML = '<p>Error loading special content.</p>';
+            return;
+        }
+        if (!data || data.length === 0) {
+            specialList.innerHTML = '<p>No special content available yet.</p>';
+            return;
+        }
+
+        data.forEach(item => {
+            const specialItem = document.createElement('div');
+            specialItem.classList.add('special-item');
+            specialItem.innerHTML = `
+                <p>${item.name}</p>
+                <img src="${item.image_url}" alt="${item.name}">
+            `;
+            specialList.appendChild(specialItem);
+        });
+    }
+
+    // Управление вкладкой Special
+    if (userTabs.includes('special')) {
+        loadSpecialContent();
+        if (userData.subscription_status === 'Developer') {
+            document.getElementById('special-form').classList.remove('hidden');
+            document.getElementById('add-special-btn').addEventListener('click', async () => {
+                const name = document.getElementById('special-name').value.trim();
+                const fileInput = document.getElementById('special-image');
+                const file = fileInput.files[0];
+
+                if (!name || !file) {
+                    alert('Please fill in all fields and select an image.');
+                    return;
+                }
+
+                // Загрузка изображения в Supabase Storage
+                const { data: fileData, error: uploadError } = await supabase.storage
+                    .from('special-images')
+                    .upload(`${Date.now()}-${file.name}`, file);
+
+                if (uploadError) {
+                    console.error('Error uploading image:', uploadError.message);
+                    alert('Failed to upload image: ' + uploadError.message);
+                    return;
+                }
+
+                const imageUrl = supabase.storage.from('special-images').getPublicUrl(fileData.path).data.publicUrl;
+
+                // Сохранение в таблицу special
+                const { error } = await supabase.from('special').insert({
+                    name,
+                    image_url: imageUrl,
+                    created_by: userData.id
+                });
+
+                if (error) {
+                    console.error('Error adding special:', error.message);
+                    alert('Failed to add special: ' + error.message);
+                } else {
+                    document.getElementById('special-name').value = '';
+                    fileInput.value = '';
+                    loadSpecialContent();
                 }
             });
         }
