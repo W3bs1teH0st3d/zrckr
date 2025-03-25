@@ -1723,9 +1723,9 @@ footer {
 }
 
 .booster-card {
-    flex: 0 0 auto; /* Убираем фиксированную ширину, чтобы карточка растягивалась */
-    min-width: 160px; /* Минимальная ширина для коротких имен */
-    max-width: 240px; /* Максимальная ширина для длинных имен */
+    flex: 0 0 auto;
+    min-width: 160px;
+    max-width: 240px;
     margin: 10px;
     padding: 15px;
     background: var(--card-bg);
@@ -1737,6 +1737,7 @@ footer {
     display: flex;
     flex-direction: column;
     align-items: center;
+    min-height: 180px; /* Увеличиваем минимальную высоту карточки */
 }
 
 .booster-card:hover {
@@ -1757,13 +1758,13 @@ footer {
 .booster-name {
     font-family: 'Poppins', sans-serif;
     font-size: 1rem;
-    margin: 0 0 5px 0; /* Уменьшаем отступ снизу */
+    margin: 0 0 8px 0; /* Увеличиваем отступ снизу для пространства */
     color: var(--text-primary);
     font-weight: 500;
-    word-break: break-word; /* Перенос длинных имен */
-    overflow-wrap: break-word; /* Совместимость */
-    max-width: 100%; /* Ограничение по ширине карточки */
-    padding: 0 5px; /* Отступы для читаемости */
+    word-break: break-word;
+    overflow-wrap: break-word;
+    max-width: 100%;
+    padding: 0 5px;
 }
 
 .boost-count {
@@ -1772,6 +1773,7 @@ footer {
     justify-content: center;
     font-size: 1.1rem;
     color: var(--accent);
+    padding-bottom: 10px; /* Отступ снизу, чтобы не прилипало к краю */
 }
 
 .boost-icon {
@@ -1791,6 +1793,7 @@ footer {
     .booster-card {
         min-width: 140px;
         max-width: 200px;
+        min-height: 160px; /* Уменьшаем высоту для средних экранов */
     }
     .booster-avatar {
         width: 60px;
@@ -1812,6 +1815,7 @@ footer {
     .booster-card {
         min-width: 120px;
         max-width: 180px;
+        min-height: 140px; /* Уменьшаем для маленьких экранов */
     }
     .booster-avatar {
         width: 50px;
