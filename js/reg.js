@@ -14,30 +14,39 @@ document.addEventListener('DOMContentLoaded', () => {
         return !dangerousChars.test(input);
     }
 
-    async function registerUser(username, password) {
-        if (!sanitizeInput(username) || !sanitizeInput(password)) {
+    async function registerUser(username, email, password) {
+        if (!sanitizeInput(username) || !sanitizeInput(email) || !sanitizeInput(password)) {
             return { success: false, message: 'Invalid input! Avoid <, >, ;, etc.' };
         }
 
-        const fakeEmail = `${username.toLowerCase()}@zerocrackz.com`; // Валидный домен
-
-        // Проверяем уникальность username
         const { data: usernameCheck, error: usernameError } = await supabase
             .from('users')
             .select('username')
             .eq('username', username)
             .single();
 
-        if (usernameError && usernameError.code !== 'PGRST116') { // PGRST116 — нет строк
+        if (usernameError && usernameError.code !== 'PGRST116') {
             return { success: false, message: 'Error checking username: ' + usernameError.message };
         }
         if (usernameCheck) {
             return { success: false, message: 'Username already taken' };
         }
 
-        // Регистрация через Supabase Auth
+        const { data: emailCheck, error: emailError } = await supabase
+            .from('users')
+            .select('email')
+            .eq('email', email)
+            .single();
+
+        if (emailError && emailError.code !== 'PGRST116') {
+            return { success: false, message: 'Error checking email: ' + emailError.message };
+        }
+        if (emailCheck) {
+            return { success: false, message: 'Email already registered' };
+        }
+
         const { data: authData, error: authError } = await supabase.auth.signUp({
-            email: fakeEmail,
+            email,
             password,
             options: { data: { username } }
         });
@@ -48,12 +57,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const userId = authData.user.id;
 
-        // Вставка в таблицу users
         const { error: dbError } = await supabase
             .from('users')
             .insert({
                 id: userId,
                 username,
+                email,
                 subscription_status: 'Free Tier',
                 subscription_expiry: null
             });
@@ -68,16 +77,13 @@ document.addEventListener('DOMContentLoaded', () => {
         return { success: true, message: 'Registration successful!' };
     }
 
-    async function loginUser(username, password) {
-        if (!sanitizeInput(username) || !sanitizeInput(password)) {
+    async function loginUser(email, password) {
+        if (!sanitizeInput(email) || !sanitizeInput(password)) {
             return { success: false, message: 'Invalid input! Avoid <, >, ;, etc.' };
         }
 
-        const fakeEmail = `${username.toLowerCase()}@zerocrackz.com`;
-
-        // Логин через Supabase Auth
         const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
-            email: fakeEmail,
+            email,
             password
         });
 
