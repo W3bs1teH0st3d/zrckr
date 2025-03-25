@@ -11,9 +11,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function hashPassword(password) {
         const encoder = new TextEncoder();
-        const data = encoder.encode(password);
-        const hash = await crypto.subtle.digest('SHA-256', data);
-        return Array.from(new Uint8Array(hash))
+        // Первый хэш
+        const data1 = encoder.encode(password);
+        const hash1 = await crypto.subtle.digest('SHA-256', data1);
+        const hash1Hex = Array.from(new Uint8Array(hash1))
+            .map(b => b.toString(16).padStart(2, '0'))
+            .join('');
+        // Второй хэш
+        const data2 = encoder.encode(hash1Hex);
+        const hash2 = await crypto.subtle.digest('SHA-256', data2);
+        return Array.from(new Uint8Array(hash2))
             .map(b => b.toString(16).padStart(2, '0'))
             .join('');
     }
@@ -28,7 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return { success: false, message: 'Invalid input! Avoid <, >, ;, etc.' };
         }
 
-        const hashedPassword = await hashPassword(password);
+        const doubleHashedPassword = await hashPassword(password);
 
         // Проверяем уникальность username
         const { data: usernameCheck, error: usernameError } = await supabase
@@ -78,7 +85,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 id: userId,
                 username,
                 email,
-                password: hashedPassword,
+                password: doubleHashedPassword,
                 subscription_status: 'Free Tier',
                 subscription_expiry: null
             });
@@ -108,7 +115,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return { success: false, message: 'Invalid input! Avoid <, >, ;, etc.' };
         }
 
-        const hashedPassword = await hashPassword(password);
+        const doubleHashedPassword = await hashPassword(password);
 
         // Проверяем пользователя
         const { data, error } = await supabase
@@ -121,7 +128,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return { success: false, message: 'User not found' };
         }
 
-        if (hashedPassword !== data.password) {
+        if (doubleHashedPassword !== data.password) {
             return { success: false, message: 'Invalid password' };
         }
 
