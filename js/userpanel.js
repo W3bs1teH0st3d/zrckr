@@ -196,9 +196,14 @@ document.addEventListener('DOMContentLoaded', async () => {
         loadSpecialContent();
         if (userData.subscription_status === 'Developer') {
             document.getElementById('special-form').classList.remove('hidden');
-            document.getElementById('special-image-btn').addEventListener('click', () => {
-                document.getElementById('special-image').click();
-            });
+            
+            const specialImageBtn = document.getElementById('special-image-btn');
+            if (specialImageBtn) {
+                specialImageBtn.addEventListener('click', () => {
+                    document.getElementById('special-image').click();
+                });
+            }
+
             document.getElementById('add-special-btn').addEventListener('click', async () => {
                 const name = document.getElementById('special-name').value.trim();
                 const fileInput = document.getElementById('special-image');
