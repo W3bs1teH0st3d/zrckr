@@ -1694,7 +1694,7 @@ footer {
 
 /* Boosters Section */
 .boosters-section {
-    padding: 60px 0; /* Отступы в стиле сайта */
+    padding: 60px 0;
 }
 
 .boosters-title {
@@ -1719,24 +1719,29 @@ footer {
 
 .carousel-track {
     display: flex;
-    animation: scroll 20s linear infinite; /* Бесконечная прокрутка */
+    animation: scroll 20s linear infinite;
 }
 
 .booster-card {
-    flex: 0 0 200px; /* Фиксированная ширина карточки */
+    flex: 0 0 auto; /* Убираем фиксированную ширину, чтобы карточка растягивалась */
+    min-width: 160px; /* Минимальная ширина для коротких имен */
+    max-width: 240px; /* Максимальная ширина для длинных имен */
     margin: 10px;
     padding: 15px;
-    background: var(--card-bg); /* Используем твой стиль карточек */
+    background: var(--card-bg);
     border-radius: 15px;
     border: 1px solid rgba(255, 255, 255, 0.05);
     backdrop-filter: blur(10px);
     text-align: center;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .booster-card:hover {
     transform: translateY(-5px);
-    box-shadow: var(--glow); /* Глоу-эффект из твоего дизайна */
+    box-shadow: var(--glow);
     border-color: var(--accent);
 }
 
@@ -1746,16 +1751,27 @@ footer {
     border-radius: 50%;
     object-fit: cover;
     margin-bottom: 10px;
-    border: 2px solid var(--accent); /* Акцентная рамка */
+    border: 2px solid var(--accent);
+}
+
+.booster-name {
+    font-family: 'Poppins', sans-serif;
+    font-size: 1rem;
+    margin: 0 0 5px 0; /* Уменьшаем отступ снизу */
+    color: var(--text-primary);
+    font-weight: 500;
+    word-break: break-word; /* Перенос длинных имен */
+    overflow-wrap: break-word; /* Совместимость */
+    max-width: 100%; /* Ограничение по ширине карточки */
+    padding: 0 5px; /* Отступы для читаемости */
 }
 
 .boost-count {
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.2rem;
-    color: var(--accent); /* Яркий цвет из твоей палитры */
-    margin-bottom: 10px;
+    font-size: 1.1rem;
+    color: var(--accent);
 }
 
 .boost-icon {
@@ -1764,28 +1780,24 @@ footer {
     margin-left: 5px;
 }
 
-.booster-name {
-    font-family: 'Poppins', sans-serif;
-    font-size: 1rem;
-    margin: 0;
-    color: var(--text-primary);
-    font-weight: 500;
-}
-
 /* Анимация карусели */
 @keyframes scroll {
     0% { transform: translateX(0); }
-    100% { transform: translateX(-50%); } /* Половина длины из-за дублирования */
+    100% { transform: translateX(-50%); }
 }
 
 /* Адаптивность */
 @media (max-width: 768px) {
     .booster-card {
-        flex: 0 0 150px;
+        min-width: 140px;
+        max-width: 200px;
     }
     .booster-avatar {
         width: 60px;
         height: 60px;
+    }
+    .booster-name {
+        font-size: 0.95rem;
     }
     .boost-count {
         font-size: 1rem;
@@ -1798,13 +1810,17 @@ footer {
 
 @media (max-width: 576px) {
     .booster-card {
-        flex: 0 0 120px;
+        min-width: 120px;
+        max-width: 180px;
     }
     .booster-avatar {
         width: 50px;
         height: 50px;
     }
     .booster-name {
+        font-size: 0.9rem;
+    }
+    .boost-count {
         font-size: 0.9rem;
     }
 }
