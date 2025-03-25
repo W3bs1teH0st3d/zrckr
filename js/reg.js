@@ -9,6 +9,15 @@ document.addEventListener('DOMContentLoaded', () => {
         'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlwZm9lYWNrZGV5emttcmt5dHd6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDI3ODc5OTQsImV4cCI6MjA1ODM2Mzk5NH0.WkCxdRT8sy6n9VH1owcDgnbCJzjgzm5P5OG1h86eRYg'
     );
 
+    async function hashPassword(password) {
+        const encoder = new TextEncoder();
+        const data = encoder.encode(password);
+        const hash = await crypto.subtle.digest('SHA-256', data);
+        return Array.from(new Uint8Array(hash))
+            .map(b => b.toString(16).padStart(2, '0'))
+            .join('');
+    }
+
     function sanitizeInput(input) {
         const dangerousChars = /[<>;'"`]/g;
         return !dangerousChars.test(input);
@@ -18,6 +27,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!sanitizeInput(username) || !sanitizeInput(email) || !sanitizeInput(password)) {
             return { success: false, message: 'Invalid input! Avoid <, >, ;, etc.' };
         }
+
+        const hashedPassword = await hashPassword(password);
 
         // Проверяем уникальность username
         const { data: usernameCheck, error: usernameError } = await supabase
@@ -60,13 +71,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const userId = authData.user.id;
 
-        // Вставка в таблицу users после успешной регистрации
+        // Вставка в таблицу users
         const { error: dbError } = await supabase
             .from('users')
             .insert({
                 id: userId,
                 username,
                 email,
+                password: hashedPassword,
                 subscription_status: 'Free Tier',
                 subscription_expiry: null
             });
@@ -75,7 +87,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return { success: false, message: 'Database error: ' + dbError.message };
         }
 
-        // Устанавливаем сессию вручную (если signUp не залогинил автоматически)
+        // Логиним сразу после регистрации
         const { error: loginError } = await supabase.auth.signInWithPassword({
             email,
             password
@@ -96,7 +108,25 @@ document.addEventListener('DOMContentLoaded', () => {
             return { success: false, message: 'Invalid input! Avoid <, >, ;, etc.' };
         }
 
-        const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+        const hashedPassword = await hashPassword(password);
+
+        // Проверяем пользователя
+        const { data, error } = await supabase
+            .from('users')
+            .select('id, username, email, password')
+            .eq('email', email)
+            .single();
+
+        if (error || !data) {
+            return { success: false, message: 'User not found' };
+        }
+
+        if (hashedPassword !== data.password) {
+            return { success: false, message: 'Invalid password' };
+        }
+
+        // Логиним через Supabase Auth
+        const { error: authError } = await supabase.auth.signInWithPassword({
             email,
             password
         });
@@ -105,13 +135,10 @@ document.addEventListener('DOMContentLoaded', () => {
             return { success: false, message: 'Login failed: ' + authError.message };
         }
 
-        const userId = authData.user.id;
-        const storedUsername = authData.user.user_metadata.username;
+        document.cookie = `session_token=${data.id}; max-age=31536000; path=/`;
+        localStorage.setItem('username', data.username);
 
-        document.cookie = `session_token=${userId}; max-age=31536000; path=/`;
-        localStorage.setItem('username', storedUsername);
-
-        return { success: true, message: 'Login successful!', username: storedUsername };
+        return { success: true, message: 'Login successful!', username: data.username };
     }
 
     window.registerUser = registerUser;
