@@ -1692,18 +1692,23 @@ footer {
 
 
 
+/* Boosters Section */
 .boosters-section {
-    padding: 40px 0;
-    background: #1a1a1a; /* Темный фон, как в твоем стиле */
-    color: #fff;
-    text-align: center;
+    padding: 60px 0; /* Отступы в стиле сайта */
 }
 
-.boosters-section h2 {
-    font-family: 'Poppins', sans-serif;
-    font-size: 2rem;
-    margin-bottom: 20px;
-    color: #ff00ff; /* Акцентный цвет, можешь изменить */
+.boosters-title {
+    text-align: center;
+    margin-bottom: 40px;
+    font-size: 42px;
+    font-weight: 700;
+}
+
+.boosters-title span {
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
 
 .boosters-carousel {
@@ -1714,22 +1719,25 @@ footer {
 
 .carousel-track {
     display: flex;
-    animation: scroll 20s linear infinite; /* Бесконечная анимация */
+    animation: scroll 20s linear infinite; /* Бесконечная прокрутка */
 }
 
 .booster-card {
     flex: 0 0 200px; /* Фиксированная ширина карточки */
     margin: 10px;
     padding: 15px;
-    background: #2a2a2a; /* Темный фон карточки */
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    background: var(--card-bg); /* Используем твой стиль карточек */
+    border-radius: 15px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
     text-align: center;
-    transition: transform 0.3s ease;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .booster-card:hover {
-    transform: scale(1.05); /* Легкий ховер-эффект */
+    transform: translateY(-5px);
+    box-shadow: var(--glow); /* Глоу-эффект из твоего дизайна */
+    border-color: var(--accent);
 }
 
 .booster-avatar {
@@ -1738,32 +1746,36 @@ footer {
     border-radius: 50%;
     object-fit: cover;
     margin-bottom: 10px;
+    border: 2px solid var(--accent); /* Акцентная рамка */
 }
 
 .boost-count {
-    display: block;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     font-size: 1.2rem;
-    color: #00ffcc; /* Яркий цвет для количества бустов */
-    margin-bottom: 5px;
+    color: var(--accent); /* Яркий цвет из твоей палитры */
+    margin-bottom: 10px;
 }
 
 .boost-icon {
-    width: 24px;
-    height: 24px;
-    margin-bottom: 10px;
+    width: 20px;
+    height: 20px;
+    margin-left: 5px;
 }
 
 .booster-name {
     font-family: 'Poppins', sans-serif;
     font-size: 1rem;
     margin: 0;
-    color: #fff;
+    color: var(--text-primary);
+    font-weight: 500;
 }
 
 /* Анимация карусели */
 @keyframes scroll {
     0% { transform: translateX(0); }
-    100% { transform: translateX(-50%); } /* Половина длины, т.к. элементы дублированы */
+    100% { transform: translateX(-50%); } /* Половина длины из-за дублирования */
 }
 
 /* Адаптивность */
@@ -1777,5 +1789,22 @@ footer {
     }
     .boost-count {
         font-size: 1rem;
+    }
+    .boost-icon {
+        width: 16px;
+        height: 16px;
+    }
+}
+
+@media (max-width: 576px) {
+    .booster-card {
+        flex: 0 0 120px;
+    }
+    .booster-avatar {
+        width: 50px;
+        height: 50px;
+    }
+    .booster-name {
+        font-size: 0.9rem;
     }
 }
