@@ -1,5 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     if (typeof window.supabase === 'undefined') {
+        console.error('Supabase not loaded');
         return;
     }
 
@@ -8,104 +9,69 @@ document.addEventListener('DOMContentLoaded', () => {
         'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlwZm9lYWNrZGV5emttcmt5dHd6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDI3ODc5OTQsImV4cCI6MjA1ODM2Mzk5NH0.WkCxdRT8sy6n9VH1owcDgnbCJzjgzm5P5OG1h86eRYg'
     );
 
-    async function hashPassword(password) {
-        const encoder = new TextEncoder();
-        const data = encoder.encode(password);
-        const hash = await crypto.subtle.digest('SHA-256', data);
-        return Array.from(new Uint8Array(hash))
-            .map(b => b.toString(16).padStart(2, '0'))
-            .join('');
-    }
-
     function sanitizeInput(input) {
         const dangerousChars = /[<>;'"`]/g;
         return !dangerousChars.test(input);
     }
 
-    async function getClientInfo() {
-        const userAgent = navigator.userAgent;
-        const ipResponse = await fetch('https://api.ipify.org?format=json');
-        const { ip } = await ipResponse.json();
-        return { ip, userAgent };
-    }
-
-    async function registerUser(username, password, password2) {
-        if (!sanitizeInput(username) || !sanitizeInput(password) || !sanitizeInput(password2)) {
+    async function registerUser(username, email, password) {
+        if (!sanitizeInput(username) || !sanitizeInput(email) || !sanitizeInput(password)) {
             return { success: false, message: 'Invalid input! Avoid <, >, ;, etc.' };
         }
 
-        const clientInfo = await getClientInfo();
-        const clientHash = await hashPassword(`${clientInfo.ip}-${clientInfo.userAgent}`);
+        // Регистрация через Supabase Auth
+        const { data: authData, error: authError } = await supabase.auth.signUp({
+            email,
+            password,
+            options: { data: { username } } // Передаём username как метаданные
+        });
 
-        const { data: existing } = await supabase
-            .from('users')
-            .select('username')
-            .eq('client_hash', clientHash)
-            .single();
-
-        if (existing) {
-            return { success: false, message: 'This device is already registered with another account.' };
+        if (authError) {
+            return { success: false, message: 'Registration failed: ' + authError.message };
         }
 
-        const { data: usernameCheck } = await supabase
-            .from('users')
-            .select('username')
-            .eq('username', username)
-            .single();
+        const userId = authData.user.id;
 
-        if (usernameCheck) {
-            return { success: false, message: 'Username already taken.' };
-        }
-
-        const hashedPassword = await hashPassword(password);
-        const hashedPassword2 = await hashPassword(password2);
-
-        const { error } = await supabase
+        // Вставка в таблицу users
+        const { error: dbError } = await supabase
             .from('users')
             .insert({
+                id: userId, // Связываем с auth.uid()
                 username,
-                password: hashedPassword,
-                password2: hashedPassword2,
+                email,
                 subscription_status: 'Free Tier',
-                subscription_expiry: null,
-                client_hash: clientHash
+                subscription_expiry: null
             });
 
-        if (error) {
-            return { success: false, message: 'Registration failed: ' + error.message };
+        if (dbError) {
+            return { success: false, message: 'Database error: ' + dbError.message };
         }
 
-        document.cookie = `session_token=${clientHash}; max-age=31536000; path=/`;
+        document.cookie = `session_token=${userId}; max-age=31536000; path=/`;
         localStorage.setItem('username', username);
 
         return { success: true, message: 'Registration successful!' };
     }
 
-    async function loginUser(username, password) {
-        if (!sanitizeInput(username) || !sanitizeInput(password)) {
+    async function loginUser(email, password) {
+        if (!sanitizeInput(email) || !sanitizeInput(password)) {
             return { success: false, message: 'Invalid input! Avoid <, >, ;, etc.' };
         }
 
-        const hashedPassword = await hashPassword(password);
+        // Логин через Supabase Auth
+        const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+            email,
+            password
+        });
 
-        const { data, error } = await supabase
-            .from('users')
-            .select('username, password, password2, client_hash')
-            .eq('username', username)
-            .single();
-
-        if (error || !data) {
-            return { success: false, message: 'User not found' };
+        if (authError) {
+            return { success: false, message: 'Login failed: ' + authError.message };
         }
 
-        const isPasswordValid = hashedPassword === data.password;
-        const isPassword2Valid = hashedPassword === data.password2;
+        const userId = authData.user.id;
+        const username = authData.user.user_metadata.username;
 
-        if (!isPasswordValid && !isPassword2Valid) {
-            return { success: false, message: 'Invalid username or password' };
-        }
-
-        document.cookie = `session_token=${data.client_hash}; max-age=31536000; path=/`;
+        document.cookie = `session_token=${userId}; max-age=31536000; path=/`;
         localStorage.setItem('username', username);
 
         return { success: true, message: 'Login successful!', username };
