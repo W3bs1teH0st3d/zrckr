@@ -912,7 +912,7 @@ footer {
     display: none;
 }
 
-
+/* Кнопки всегда внизу */
 .crack-buttons {
     margin-top: 20px;
     display: flex;
@@ -946,17 +946,17 @@ footer {
     width: 100%;
     overflow: hidden;
     background: none;
-    height: 150px;
+    height: 150px; /* Увеличили высоту, чтобы вместить глоу */
     display: flex;
     align-items: center;
-    padding: 15px 0; 
+    padding: 15px 0; /* Добавили внутренние отступы для пространства под глоу */
 }
 
 .boosters-ticker {
     display: flex;
-    animation: scroll 20s linear infinite; 
+    animation: scroll 20s linear infinite; /* Бесконечная прокрутка */
     height: 100%;
-    white-space: nowrap; 
+    white-space: nowrap; /* Убираем переносы */
 }
 
 .booster-card {
@@ -968,8 +968,8 @@ footer {
     border-radius: 15px;
     padding: 10px;
     margin: 0 15px;
-    width: 230px;
-    height: 130px; 
+    width: 230px; /* Квадратная ширина */
+    height: 130px; /* Квадратная высота */
     backdrop-filter: blur(10px);
     transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
 }
@@ -1021,7 +1021,7 @@ footer {
     width: 16px;
     height: 16px;
     margin-right: 5px;
-    background: url('../images/boost.png') no-repeat center;
+    background: url('../images/boost.png') no-repeat center; /* Твой локальный путь */
     background-size: contain;
 }
 
@@ -1038,4 +1038,462 @@ footer {
     display: flex;
     height: 100%;
     white-space: nowrap;
+}
+
+
+
+
+
+/* Login Section */
+.login-section {
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-top: var(--nav-height);
+}
+
+.login-card {
+    background: var(--card-bg);
+    border-radius: 15px;
+    padding: 40px;
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    transition: transform 0.3s ease;
+}
+
+.login-card:hover {
+    transform: translateY(-5px);
+}
+
+.login-card h1 {
+    font-size: 36px;
+    font-weight: 700;
+    margin-bottom: 15px;
+}
+
+.login-card h1 span {
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.login-card p {
+    font-size: 16px;
+    color: var(--text-secondary);
+    margin-bottom: 30px;
+    line-height: 1.6;
+}
+
+.login-form, .register-form { /* Добавлен .register-form */
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.input-group {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.login-form input, .register-form input { /* Добавлен .register-form */
+    width: 100%;
+    padding: 12px 40px 12px 40px; /* Увеличен правый padding для глаза */
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    background: var(--darker-bg);
+    color: var(--text-primary);
+    font-size: 16px;
+    outline: none;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.login-form input:focus, .register-form input:focus {
+    border-color: var(--accent);
+    box-shadow: var(--glow);
+}
+
+.login-form input::placeholder, .register-form input::placeholder {
+    color: var(--text-secondary);
+    opacity: 0.7;
+}
+
+.login-form .btn-primary, .register-form .btn-primary {
+    padding: 12px;
+    font-size: 16px;
+    margin-top: 10px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.login-form .btn-primary:hover, .register-form .btn-primary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 0 25px rgba(0, 208, 255, 0.7);
+}
+
+.login-footer, .register-footer { /* Добавлен .register-footer */
+    margin-top: 20px;
+    font-size: 14px;
+    color: var(--text-secondary);
+}
+
+.login-footer a, .register-footer a {
+    color: var(--accent);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.login-footer a:hover, .register-footer a:hover {
+    color: var(--accent-alt);
+}
+
+/* Login Enhancements */
+.input-group i.fa-lock, .input-group i.fa-user { /* Уточняем для разных иконок */
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-secondary);
+    font-size: 16px;
+    transition: color 0.3s ease;
+}
+
+.input-group .toggle-password {
+    position: absolute;
+    right: 15px; /* Глаз справа */
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-secondary);
+    font-size: 16px;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.login-form input:focus + i, .register-form input:focus + i,
+.login-form input:not(:placeholder-shown) + i, .register-form input:not(:placeholder-shown) + i {
+    color: var(--accent);
+}
+
+.input-group .toggle-password:hover,
+.input-group .toggle-password.active {
+    color: var(--accent);
+}
+
+.btn .fa-spinner {
+    margin-left: 10px;
+}
+
+.hidden {
+    display: none;
+}
+
+.btn.disabled {
+    background: #555;
+    box-shadow: none;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+/* Анимация для показа пароля */
+@keyframes dustFade {
+    0% { opacity: 1; transform: translateX(0); }
+    50% { opacity: 0.5; transform: translateX(10px); }
+    100% { opacity: 0; transform: translateX(20px); }
+}
+
+.password-reveal::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(to right, rgba(255, 255, 255, 0.2), transparent);
+    animation: dustFade 0.5s ease forwards;
+    pointer-events: none;
+}
+
+/* Дополнительно для register-section, чтобы совпадало с login-section */
+.register-section {
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-top: var(--nav-height);
+}
+
+.register-card {
+    background: var(--card-bg);
+    border-radius: 15px;
+    padding: 40px;
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    transition: transform 0.3s ease;
+}
+
+.register-card:hover {
+    transform: translateY(-5px);
+}
+
+
+
+
+.userpanel-layout {
+    display: flex;
+    height: calc(100vh - var(--nav-height));
+    padding-top: var(--nav-height);
+}
+
+.sidebar {
+    width: 250px;
+    background: var(--card-bg);
+    padding: 20px;
+    border-right: 1px solid rgba(255, 255, 255, 0.05);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.user-info {
+    text-align: center;
+}
+
+.user-info h2 {
+    font-size: 24px;
+    color: var(--text-primary);
+    margin-bottom: 5px;
+}
+
+.user-info p {
+    font-size: 16px;
+    color: var(--text-secondary);
+}
+
+.sponsor-banner {
+    background: var(--primary-gradient);
+    padding: 10px;
+    border-radius: 5px;
+    color: white;
+    font-size: 14px;
+}
+
+.hidden {
+    display: none;
+}
+
+.tabs {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.tab-item {
+    padding: 10px 15px;
+    cursor: pointer;
+    color: var(--text-secondary);
+    transition: color 0.3s ease, background 0.3s ease;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.tab-item i {
+    font-size: 16px;
+}
+
+.tab-item.active {
+    color: var(--accent);
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.tab-item.disabled {
+    color: #555;
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+.userpanel-section {
+    flex: 1;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.tab-content {
+    width: 100%;
+    max-width: 600px;
+}
+
+.tab-pane {
+    display: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    background: var(--card-bg);
+    padding: 20px;
+    border-radius: 15px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.tab-pane.active {
+    display: block;
+    opacity: 1;
+}
+
+.tab-pane h2 {
+    color: var(--text-primary);
+    margin-bottom: 20px;
+    font-size: 24px;
+    font-weight: 600;
+}
+
+.tab-pane p {
+    color: var(--text-secondary);
+    font-size: 16px;
+    margin: 10px 0;
+}
+
+.tab-pane p span {
+    color: var(--text-primary);
+    font-weight: 500;
+}
+
+.tool-item, .crack-item, .leak-item {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.tool-item p, .crack-item p, .leak-item p {
+    margin: 0;
+    font-size: 16px;
+    color: var(--text-primary);
+}
+
+.leak-item pre {
+    background: rgba(0, 0, 0, 0.2);
+    padding: 10px;
+    border-radius: 5px;
+    color: var(--text-secondary);
+    white-space: pre-wrap;
+    margin: 10px 0 0;
+    font-size: 14px;
+}
+
+#leaks-form {
+    margin-top: 20px;
+}
+
+#leaks-form input, #leaks-form textarea {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 5px;
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-primary);
+    font-size: 14px;
+}
+
+#leaks-form textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+#log-content {
+    background: rgba(0, 0, 0, 0.2);
+    padding: 15px;
+    border-radius: 10px;
+    color: var(--text-secondary);
+    font-size: 14px;
+    white-space: pre-wrap;
+}
+
+.download-btn {
+    padding: 10px 20px;
+    margin: 5px;
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.download-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 0 15px rgba(0, 208, 255, 0.7);
+}
+
+#log-content {
+    text-align: left;
+    background: var(--darker-bg);
+    padding: 10px;
+    border-radius: 5px;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+
+
+.tab-btn {
+    padding: 12px 20px;
+    margin: 5px 0;
+    background: var(--card-bg);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    color: var(--text-primary);
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.3s ease;
+    width: 100%;
+    text-align: left;
+}
+
+.tab-btn:hover:not(:disabled) {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+    box-shadow: 0 4px 15px rgba(0, 255, 163, 0.3);
+}
+
+.tab-btn.active {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+}
+
+.tab-btn:disabled {
+    background: #333;
+    color: #666;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+#offline-message {
+    text-align: center;
+    padding: 20px;
+    background: var(--card-bg);
+    border-radius: 15px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
 }

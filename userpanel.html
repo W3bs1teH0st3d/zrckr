@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Panel - ZeroCrackz</title>
+    <meta name="description" content="Your personal panel for ZeroCrackz tools and cracks.">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <div class="logo">
+                <img src="images/logo.png" alt="ZeroCrackz Logo">
+                <h1>ZeroCrackz</h1>
+            </div>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="cracks.html">Cracks</a>
+                <a href="qanda.html">Q&A</a>
+                <a href="socials.html">Socials</a>
+                <a href="login.html">Login</a>
+                <a href="#" id="logout">Logout</a>
+            </div>
+            <div class="mobile-menu-btn">
+                <i class="fas fa-bars"></i>
+            </div>
+        </div>
+    </nav>
+
+    <div class="userpanel-layout">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="user-info">
+                <h2 id="username-display">Loading...</h2>
+                <p>Tier: <span id="subscription-display">Loading...</span></p>
+                <div id="sponsor-banner" class="sponsor-banner hidden">
+                    <p>Sponsor Perk!</p>
+                </div>
+            </div>
+            <div class="tabs">
+                <button class="tab-btn" data-tab="account"><i class="fas fa-user"></i> Account</button>
+                <button class="tab-btn" data-tab="tools"><i class="fas fa-tools"></i> Tools</button>
+                <button class="tab-btn" data-tab="cracks"><i class="fas fa-key"></i> Cracks</button>
+                <button class="tab-btn" data-tab="leaks"><i class="fas fa-eye"></i> Leaks</button>
+                <button class="tab-btn" data-tab="logs"><i class="fas fa-file-alt"></i> Logs</button>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <section class="userpanel-section">
+            <div id="offline-message" class="hidden">
+                <h2>Offline Mode</h2>
+                <p>You are offline or the server is not running. Please check your internet connection or start the server.</p>
+            </div>
+            <div class="tab-content">
+                <div class="tab-pane" id="account">
+                    <h2>Account Information</h2>
+                    <p>Username: <span id="info-username">Loading...</span></p>
+                    <p>Subscription: <span id="info-subscription">Loading...</span></p>
+                    <p>Expiry: <span id="info-expiry">Loading...</span></p>
+                    <button id="logout-btn" class="btn btn-primary">Logout</button>
+                </div>
+                <div class="tab-pane" id="tools">
+                    <h2>Private Tools</h2>
+                    <div class="tool-item">
+                        <p>ZeroR4t</p>
+                        <button class="download-btn" data-url="https://example.com/zeror4t">Download</button>
+                    </div>
+                    <div class="tool-item">
+                        <p>ZeroTiss Premium</p>
+                        <button class="download-btn" data-url="https://example.com/zerotiss-premium">Download</button>
+                    </div>
+                </div>
+                <div class="tab-pane" id="cracks">
+                    <h2>Private Cracks</h2>
+                    <div class="crack-item">
+                        <p>Crack #1</p>
+                        <button class="download-btn" data-url="https://example.com/crack1">Download</button>
+                    </div>
+                    <div class="crack-item">
+                        <p>Crack #2</p>
+                        <button class="download-btn" data-url="https://example.com/crack2">Download</button>
+                    </div>
+                </div>
+                <div class="tab-pane" id="leaks">
+                    <h2>Private Leaks</h2>
+                    <div id="leaks-list"></div>
+                    <div id="leaks-form" class="hidden">
+                        <h3>Add New Leak</h3>
+                        <input type="text" id="leak-name" placeholder="Leak Name" required>
+                        <textarea id="leak-data" placeholder="Leak Data" required></textarea>
+                        <button id="add-leak-btn" class="btn btn-primary">Add Leak</button>
+                    </div>
+                </div>
+                <div class="tab-pane" id="logs">
+                    <h2>Server Logs (Developer Only)</h2>
+                    <pre id="log-content">No logs available yet.</pre>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        const supabase = window.supabase.createClient(
+            'https://ypfoeackdeyzkmrkytwz.supabase.co',
+            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlwZm9lYWNrZGV5emttcmt5dHd6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDI3ODc5OTQsImV4cCI6MjA1ODM2Mzk5NH0.WkCxdRT8sy6n9VH1owcDgnbCJzjgzm5P5OG1h86eRYg'
+        );
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const offlineMessage = document.getElementById('offline-message');
+            const tabContent = document.querySelector('.tab-content');
+
+            // Проверка онлайна
+            if (!navigator.onLine) {
+                offlineMessage.classList.remove('hidden');
+                tabContent.classList.add('hidden');
+                return;
+            }
+
+            // Проверка сессии через куки
+            const sessionToken = document.cookie.split('; ')
+                .find(row => row.startsWith('session_token='))
+                ?.split('=')[1];
+
+            if (!sessionToken) {
+                window.location.href = '/login.html';
+                return;
+            }
+
+            // Проверка в базе
+            let userData;
+            try {
+                const { data, error } = await supabase
+                    .from('users')
+                    .select('username, subscription_status, subscription_expiry, client_hash')
+                    .eq('client_hash', sessionToken)
+                    .single();
+
+                if (error || !data) {
+                    throw error || new Error('No user data');
+                }
+                userData = data;
+                localStorage.setItem('username', userData.username);
+            } catch (err) {
+                console.error('Error fetching user:', err.message);
+                offlineMessage.classList.remove('hidden');
+                tabContent.classList.add('hidden');
+                document.cookie = 'session_token=; max-age=0; path=/';
+                window.location.href = '/login.html';
+                return;
+            }
+
+            // Заполнение данных
+            document.getElementById('username-display').textContent = userData.username;
+            document.getElementById('subscription-display').textContent = userData.subscription_status || 'Free Tier';
+            document.getElementById('info-username').textContent = userData.username;
+            document.getElementById('info-subscription').textContent = userData.subscription_status || 'Free Tier';
+            document.getElementById('info-expiry').textContent = userData.subscription_expiry
+                ? new Date(userData.subscription_expiry).toLocaleString()
+                : 'Never';
+
+            if (userData.subscription_status === 'Sponsor') {
+                document.getElementById('sponsor-banner').classList.remove('hidden');
+            }
+
+            // Управление вкладками
+            const tabs = document.querySelectorAll('.tab-btn');
+            const panes = document.querySelectorAll('.tab-pane');
+            const allowedTabs = {
+                'Developer': ['account', 'tools', 'cracks', 'leaks', 'logs'],
+                'Premium': ['account', 'tools', 'cracks'],
+                'Booster': ['account', 'tools', 'cracks', 'leaks'],
+                'Sponsor': ['account', 'tools', 'cracks', 'leaks'],
+                'Free Tier': ['account', 'tools']
+            };
+            const userTabs = allowedTabs[userData.subscription_status] || allowedTabs['Free Tier'];
+
+            function switchTab(tabId) {
+                tabs.forEach(tab => tab.classList.remove('active'));
+                panes.forEach(pane => pane.classList.remove('active'));
+                const selectedTab = document.querySelector(`.tab-btn[data-tab="${tabId}"]`);
+                const selectedPane = document.getElementById(tabId);
+                if (selectedTab && selectedPane) {
+                    selectedTab.classList.add('active');
+                    selectedPane.classList.add('active');
+                }
+            }
+
+            tabs.forEach(tab => {
+                const tabId = tab.dataset.tab;
+                if (!userTabs.includes(tabId)) {
+                    tab.disabled = true;
+                    tab.classList.add('disabled');
+                } else {
+                    tab.addEventListener('click', () => {
+                        console.log(`Switching to tab: ${tabId}`);
+                        switchTab(tabId);
+                    });
+                }
+            });
+
+            // Открываем Account по умолчанию
+            if (userTabs.includes('account')) {
+                console.log('Opening Account tab by default');
+                switchTab('account');
+            }
+
+            // Загрузка Leaks
+            async function loadLeaks() {
+                const { data, error } = await supabase.from('leaks').select('*');
+                const leaksList = document.getElementById('leaks-list');
+                leaksList.innerHTML = '';
+
+                if (error || !data || data.length === 0) {
+                    leaksList.innerHTML = '<p>No leaks available yet.</p>';
+                    return;
+                }
+
+                data.forEach(leak => {
+                    const leakItem = document.createElement('div');
+                    leakItem.classList.add('leak-item');
+                    leakItem.innerHTML = `
+                        <p>${leak.name}</p>
+                        <pre>${leak.data}</pre>
+                    `;
+                    leaksList.appendChild(leakItem);
+                });
+            }
+
+            if (userTabs.includes('leaks')) {
+                loadLeaks();
+                if (userData.subscription_status === 'Developer') {
+                    document.getElementById('leaks-form').classList.remove('hidden');
+                    document.getElementById('add-leak-btn').addEventListener('click', async () => {
+                        const name = document.getElementById('leak-name').value.trim();
+                        const data = document.getElementById('leak-data').value.trim();
+
+                        if (!name || !data) {
+                            alert('Please fill in all fields.');
+                            return;
+                        }
+
+                        const { error } = await supabase.from('leaks').insert({ name, data });
+                        if (!error) {
+                            document.getElementById('leak-name').value = '';
+                            document.getElementById('leak-data').value = '';
+                            loadLeaks();
+                        } else {
+                            alert('Failed to add leak: ' + error.message);
+                        }
+                    });
+                }
+            }
+
+            // Download Buttons
+            document.querySelectorAll('.download-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    window.open(btn.dataset.url, '_blank');
+                });
+            });
+
+            // Logout Button в Account
+            document.getElementById('logout-btn').addEventListener('click', () => {
+                document.cookie = 'session_token=; max-age=0; path=/';
+                localStorage.removeItem('username');
+                window.location.href = '/login.html';
+            });
+
+            // Logout в навбаре
+            document.getElementById('logout').addEventListener('click', (e) => {
+                e.preventDefault();
+                document.cookie = 'session_token=; max-age=0; path=/';
+                localStorage.removeItem('username');
+                window.location.href = '/login.html';
+            });
+
+            // Проверка оффлайн-режима
+            window.addEventListener('online', () => {
+                offlineMessage.classList.add('hidden');
+                tabContent.classList.remove('hidden');
+                location.reload();
+            });
+            window.addEventListener('offline', () => {
+                offlineMessage.classList.remove('hidden');
+                tabContent.classList.add('hidden');
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - ZeroCrackz</title>
+    <meta name="description" content="Create an account to access exclusive cracks and tools on ZeroCrackz.">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <div class="logo">
+                <img src="images/logo.png" alt="ZeroCrackz Logo">
+                <h1>ZeroCrackz</h1>
+            </div>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="cracks.html">Cracks</a>
+                <a href="qanda.html">Q&A</a>
+                <a href="socials.html">Socials</a>
+                <a href="login.html">Login</a>
+            </div>
+            <div class="mobile-menu-btn">
+                <i class="fas fa-bars"></i>
+            </div>
+        </div>
+    </nav>
+
+    <section class="login-section register-section">
+        <div class="container">
+            <div class="login-card register-card">
+                <h1>Sign <span>Up</span></h1>
+                <p>Create an account to access exclusive tools.</p>
+                <form id="register-form" class="login-form register-form">
+                    <div class="input-group">
+                        <i class="fas fa-user"></i>
+                        <input type="text" placeholder="Username" id="username" required>
+                    </div>
+                    <div class="input-group">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" placeholder="Password" id="password" required>
+                        <i class="fas fa-eye toggle-password" id="toggle-password"></i>
+                    </div>
+                    <div class="input-group">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" placeholder="Backup Password" id="password2" required>
+                        <i class="fas fa-eye toggle-password" id="toggle-password2"></i>
+                    </div>
+                    <p id="register-error" class="error-message"></p>
+                    <button type="submit" class="btn btn-primary" id="register-btn">
+                        <span class="btn-text">Register</span>
+                        <i class="fas fa-spinner fa-spin hidden"></i>
+                    </button>
+                </form>
+                <p class="login-footer register-footer">Already have an account? <a href="login.html">Sign in</a></p>
+            </div>
+        </div>
+    </section>
+
+    <script src="js/reg.js"></script>
+    <script src="js/main.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const registerForm = document.getElementById('register-form');
+            const registerBtn = document.getElementById('register-btn');
+            const btnText = registerBtn.querySelector('.btn-text');
+            const spinner = registerBtn.querySelector('.fa-spinner');
+            const errorMessage = document.getElementById('register-error');
+            const passwordInput = document.getElementById('password');
+            const password2Input = document.getElementById('password2');
+            const togglePassword = document.getElementById('toggle-password');
+            const togglePassword2 = document.getElementById('toggle-password2');
+
+            togglePassword.addEventListener('click', () => {
+                const isPassword = passwordInput.type === 'password';
+                passwordInput.type = isPassword ? 'text' : 'password';
+                togglePassword.classList.toggle('active');
+                togglePassword.classList.toggle('fa-eye');
+                togglePassword.classList.toggle('fa-eye-slash');
+                if (isPassword) {
+                    passwordInput.classList.add('password-reveal');
+                    setTimeout(() => passwordInput.classList.remove('password-reveal'), 500);
+                }
+            });
+
+            togglePassword2.addEventListener('click', () => {
+                const isPassword = password2Input.type === 'password';
+                password2Input.type = isPassword ? 'text' : 'password';
+                togglePassword2.classList.toggle('active');
+                togglePassword2.classList.toggle('fa-eye');
+                togglePassword2.classList.toggle('fa-eye-slash');
+                if (isPassword) {
+                    password2Input.classList.add('password-reveal');
+                    setTimeout(() => password2Input.classList.remove('password-reveal'), 500);
+                }
+            });
+
+            registerForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const username = document.getElementById('username').value.trim();
+                const password = document.getElementById('password').value.trim();
+                const password2 = document.getElementById('password2').value.trim();
+
+                btnText.classList.add('hidden');
+                spinner.classList.remove('hidden');
+                registerBtn.classList.add('disabled');
+                errorMessage.textContent = '';
+
+                const result = await window.registerUser(username, password, password2);
+                if (result.success) {
+                    const sessionHash = localStorage.getItem('user_session');
+                    window.location.href = `/userpanel.html?hash=${sessionHash}`;
+                } else {
+                    errorMessage.textContent = result.message;
+                    btnText.classList.remove('hidden');
+                    spinner.classList.add('hidden');
+                    registerBtn.classList.remove('disabled');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

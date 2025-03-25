@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - ZeroCrackz</title>
+    <meta name="description" content="Sign in to access exclusive cracks and tools on ZeroCrackz.">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <div class="logo">
+                <img src="images/logo.png" alt="ZeroCrackz Logo">
+                <h1>ZeroCrackz</h1>
+            </div>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="cracks.html">Cracks</a>
+                <a href="qanda.html">Q&A</a>
+                <a href="socials.html">Socials</a>
+                <a href="login.html">Login</a>
+            </div>
+            <div class="mobile-menu-btn">
+                <i class="fas fa-bars"></i>
+            </div>
+        </div>
+    </nav>
+
+    <section class="login-section">
+        <div class="container">
+            <div class="login-card">
+                <h1>Sign <span>In</span></h1>
+                <p>Access your account to download exclusive tools and cracks.</p>
+                <form id="login-form" class="login-form">
+                    <div class="input-group">
+                        <i class="fas fa-user"></i>
+                        <input type="text" placeholder="Username" required>
+                    </div>
+                    <div class="input-group">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" placeholder="Password" id="password-input" required>
+                        <i class="fas fa-eye toggle-password" id="toggle-password"></i>
+                    </div>
+                    <p id="login-error" class="error-message"></p>
+                    <button type="submit" class="btn btn-primary" id="login-btn">
+                        <span class="btn-text">Login</span>
+                        <i class="fas fa-spinner fa-spin hidden"></i>
+                    </button>
+                </form>
+                <p class="login-footer">Not registered? <a href="register.html">Sign up</a></p>
+            </div>
+        </div>
+    </section>
+
+    <script src="js/reg.js"></script>
+    <script src="js/main.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const loginForm = document.getElementById('login-form');
+            const loginBtn = document.getElementById('login-btn');
+            const btnText = loginBtn.querySelector('.btn-text');
+            const spinner = loginBtn.querySelector('.fa-spinner');
+            const errorMessage = document.getElementById('login-error');
+            const passwordInput = document.getElementById('password-input');
+            const togglePassword = document.getElementById('toggle-password');
+
+            togglePassword.addEventListener('click', () => {
+                const isPassword = passwordInput.type === 'password';
+                passwordInput.type = isPassword ? 'text' : 'password';
+                togglePassword.classList.toggle('active');
+                togglePassword.classList.toggle('fa-eye');
+                togglePassword.classList.toggle('fa-eye-slash');
+                if (isPassword) {
+                    passwordInput.classList.add('password-reveal');
+                    setTimeout(() => passwordInput.classList.remove('password-reveal'), 500);
+                }
+            });
+
+            loginForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const username = document.querySelector('#login-form input[type="text"]').value.trim();
+                const password = document.querySelector('#login-form input[type="password"]').value.trim();
+
+                btnText.classList.add('hidden');
+                spinner.classList.remove('hidden');
+                loginBtn.classList.add('disabled');
+                errorMessage.textContent = '';
+
+                const result = await window.loginUser(username, password);
+                if (result.success) {
+                    window.location.href = '/userpanel.html';
+                } else {
+                    errorMessage.textContent = result.message;
+                    btnText.classList.remove('hidden');
+                    spinner.classList.add('hidden');
+                    loginBtn.classList.remove('disabled');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
