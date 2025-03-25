@@ -1589,3 +1589,115 @@ footer {
         height: auto;
     }
 }
+
+/* Горизонтальная прокрутка для special */
+#special-list {
+    max-width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    white-space: nowrap;
+    padding: 15px;
+    background: var(--card-bg);
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Кастомный скроллбар */
+#special-list::-webkit-scrollbar {
+    height: 8px;
+}
+
+#special-list::-webkit-scrollbar-track {
+    background: var(--darker-bg);
+    border-radius: 10px;
+}
+
+#special-list::-webkit-scrollbar-thumb {
+    background: var(--primary-gradient);
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 208, 255, 0.5);
+}
+
+#special-list::-webkit-scrollbar-thumb:hover {
+    background: var(--accent);
+}
+
+/* Стили для карточек special */
+.special-item {
+    display: inline-block;
+    vertical-align: top;
+    min-width: 300px;
+    width: auto;
+    min-height: 250px; /* Увеличиваем высоту для изображений */
+    background: rgba(255, 255, 255, 0.05);
+    padding: 20px;
+    border-radius: 10px;
+    margin-right: 20px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Ховер-эффект */
+.special-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+/* Заголовок special */
+.special-item p {
+    margin: 0 0 10px 0;
+    font-size: 18px;
+    color: var(--text-primary);
+    font-weight: 500;
+}
+
+/* Изображение special */
+.special-item img {
+    width: 100%;
+    max-height: 200px;
+    object-fit: cover; /* Изображение обрезается аккуратно */
+    border-radius: 5px;
+}
+
+/* Форма special */
+#special-form input[type="file"] {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 5px;
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-primary);
+    font-size: 14px;
+}
+
+/* Адаптивность */
+@media (max-width: 1024px) {
+    .special-item {
+        min-width: 250px;
+        min-height: 220px;
+    }
+}
+
+@media (max-width: 768px) {
+    .special-item {
+        min-width: 200px;
+        min-height: 180px;
+    }
+}
+
+@media (max-width: 576px) {
+    .special-item {
+        min-width: 100%;
+        margin-right: 10px;
+    }
+    #special-list {
+        white-space: normal;
+        overflow-x: hidden;
+        overflow-y: auto;
+        max-height: 400px;
+    }
+    #special-list::-webkit-scrollbar {
+        width: 8px;
+        height: auto;
+    }
+}
