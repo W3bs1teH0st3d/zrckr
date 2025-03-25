@@ -64,7 +64,7 @@
                     <p>Expiry: <span id="info-expiry">Loading...</span></p>
                     <button id="logout-btn" class="btn btn-primary">Logout</button>
                 </div>
-                <div class="tab-pane hidden" id="tools">
+                <div class="tab-pane" id="tools">
                     <h2>Private Tools</h2>
                     <div class="tool-item">
                         <p>ZeroR4t</p>
@@ -75,7 +75,7 @@
                         <button class="download-btn" data-url="https://example.com/zerotiss-premium">Download</button>
                     </div>
                 </div>
-                <div class="tab-pane hidden" id="cracks">
+                <div class="tab-pane" id="cracks">
                     <h2>Private Cracks</h2>
                     <div class="crack-item">
                         <p>Crack #1</p>
@@ -86,7 +86,7 @@
                         <button class="download-btn" data-url="https://example.com/crack2">Download</button>
                     </div>
                 </div>
-                <div class="tab-pane hidden" id="leaks">
+                <div class="tab-pane" id="leaks">
                     <h2>Private Leaks</h2>
                     <div id="leaks-list"></div>
                     <div id="leaks-form" class="hidden">
@@ -96,7 +96,7 @@
                         <button id="add-leak-btn" class="btn btn-primary">Add Leak</button>
                     </div>
                 </div>
-                <div class="tab-pane hidden" id="logs">
+                <div class="tab-pane" id="logs">
                     <h2>Server Logs (Developer Only)</h2>
                     <pre id="log-content">No logs available yet.</pre>
                 </div>
@@ -131,13 +131,13 @@
                 return;
             }
 
-            // Проверка пользователя в базе
+            // Проверка в базе
             let userData;
             try {
                 const { data, error } = await supabase
                     .from('users')
-                    .select('id, username, subscription_status, subscription_expiry')
-                    .eq('id', sessionToken)
+                    .select('username, subscription_status, subscription_expiry, client_hash')
+                    .eq('client_hash', sessionToken)
                     .single();
 
                 if (error || !data) {
@@ -154,7 +154,7 @@
                 return;
             }
 
-            // Заполнение данных пользователя
+            // Заполнение данных
             document.getElementById('username-display').textContent = userData.username;
             document.getElementById('subscription-display').textContent = userData.subscription_status || 'Free Tier';
             document.getElementById('info-username').textContent = userData.username;
@@ -181,98 +181,76 @@
 
             function switchTab(tabId) {
                 tabs.forEach(tab => tab.classList.remove('active'));
-                panes.forEach(pane => {
-                    pane.classList.add('hidden');
-                    pane.style.opacity = '0';
-                });
-
+                panes.forEach(pane => pane.classList.remove('active'));
                 const selectedTab = document.querySelector(`.tab-btn[data-tab="${tabId}"]`);
                 const selectedPane = document.getElementById(tabId);
-
                 if (selectedTab && selectedPane) {
                     selectedTab.classList.add('active');
-                    selectedPane.classList.remove('hidden');
-                    setTimeout(() => selectedPane.style.opacity = '1', 50);
-
-                    // Загрузка leaks при переключении на вкладку leaks
-                    if (tabId === 'leaks') {
-                        loadLeaks(userData.id);
-                    }
+                    selectedPane.classList.add('active');
                 }
             }
 
             tabs.forEach(tab => {
-                const tabId = tab.getAttribute('data-tab');
-                if (userTabs.includes(tabId)) {
-                    tab.classList.remove('hidden');
-                    tab.addEventListener('click', () => switchTab(tabId));
+                const tabId = tab.dataset.tab;
+                if (!userTabs.includes(tabId)) {
+                    tab.disabled = true;
+                    tab.classList.add('disabled');
                 } else {
-                    tab.classList.add('hidden');
+                    tab.addEventListener('click', () => {
+                        console.log(`Switching to tab: ${tabId}`);
+                        switchTab(tabId);
+                    });
                 }
             });
 
-            // Установка вкладки по умолчанию
-            switchTab(userTabs[0]);
-
-            // Загрузка leaks
-            async function loadLeaks(userId) {
-                const leaksList = document.getElementById('leaks-list');
-                leaksList.innerHTML = ''; // Очистка списка
-
-                try {
-                    const { data, error } = await supabase
-                        .from('leaks')
-                        .select('id, name, data, created_at')
-                        .eq('created_by', userId);
-
-                    if (error) throw error;
-
-                    if (data && data.length > 0) {
-                        data.forEach(leak => {
-                            const leakItem = document.createElement('div');
-                            leakItem.classList.add('leak-item');
-                            leakItem.innerHTML = `
-                                <p><strong>${leak.name}</strong></p>
-                                <pre>${leak.data}</pre>
-                                <small>Added: ${new Date(leak.created_at).toLocaleString()}</small>
-                            `;
-                            leaksList.appendChild(leakItem);
-                        });
-                    } else {
-                        leaksList.innerHTML = '<p>No leaks available yet.</p>';
-                    }
-                } catch (err) {
-                    console.error('Error loading leaks:', err.message);
-                    leaksList.innerHTML = '<p>Error loading leaks. Please try again later.</p>';
-                }
+            // Открываем Account по умолчанию
+            if (userTabs.includes('account')) {
+                console.log('Opening Account tab by default');
+                switchTab('account');
             }
 
-            // Добавление нового leak и управление формой
+            // Загрузка Leaks
+            async function loadLeaks() {
+                const { data, error } = await supabase.from('leaks').select('*');
+                const leaksList = document.getElementById('leaks-list');
+                leaksList.innerHTML = '';
+
+                if (error || !data || data.length === 0) {
+                    leaksList.innerHTML = '<p>No leaks available yet.</p>';
+                    return;
+                }
+
+                data.forEach(leak => {
+                    const leakItem = document.createElement('div');
+                    leakItem.classList.add('leak-item');
+                    leakItem.innerHTML = `
+                        <p>${leak.name}</p>
+                        <pre>${leak.data}</pre>
+                    `;
+                    leaksList.appendChild(leakItem);
+                });
+            }
+
             if (userTabs.includes('leaks')) {
-                if (userData.subscription_status === 'Developer' || userData.subscription_status === 'Sponsor' || userData.subscription_status === 'Booster') {
+                loadLeaks();
+                if (userData.subscription_status === 'Developer') {
                     document.getElementById('leaks-form').classList.remove('hidden');
                     document.getElementById('add-leak-btn').addEventListener('click', async () => {
                         const name = document.getElementById('leak-name').value.trim();
                         const data = document.getElementById('leak-data').value.trim();
 
                         if (!name || !data) {
-                            alert('Please fill in both fields');
+                            alert('Please fill in all fields.');
                             return;
                         }
 
-                        try {
-                            const { error } = await supabase
-                                .from('leaks')
-                                .insert({ name, data, created_by: userData.id });
-
-                            if (error) throw error;
-
+                        const { error } = await supabase.from('leaks').insert({ name, data });
+                        if (!error) {
                             document.getElementById('leak-name').value = '';
                             document.getElementById('leak-data').value = '';
-                            loadLeaks(userData.id); // Обновляем список
-                        } catch (err) {
-                            console.error('Error adding leak:', err.message);
-                            alert('Failed to add leak: ' + err.message);
+                            loadLeaks();
+                        } else {
+                            alert('Failed to add leak: ' + error.message);
                         }
                     });
                 }
@@ -281,9 +259,7 @@
             // Download Buttons
             document.querySelectorAll('.download-btn').forEach(btn => {
                 btn.addEventListener('click', () => {
-                    if (!btn.classList.contains('disabled')) {
-                        window.open(btn.dataset.url, '_blank');
-                    }
+                    window.open(btn.dataset.url, '_blank');
                 });
             });
 
