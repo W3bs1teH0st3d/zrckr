@@ -1483,3 +1483,35 @@ footer {
     border: 1px solid rgba(255, 255, 255, 0.05);
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
 }
+
+#leaks-list {
+    max-width: 100%; /* Ограничиваем ширину контейнера под родительский элемент */
+    overflow-x: auto; /* Горизонтальная прокрутка */
+    overflow-y: hidden; /* Убираем вертикальную прокрутку */
+    white-space: nowrap; /* Элементы в ряд */
+    padding: 10px; /* Внутренний отступ */
+    border: 1px solid #ccc; /* Рамка для выделения области */
+}
+
+.leak-item {
+    display: inline-block; /* Карточки в ряд */
+    vertical-align: top; /* Выравнивание по верху */
+    width: 200px; /* Фиксированная ширина карточки */
+    margin-right: 15px; /* Отступ между карточками */
+    padding: 10px; /* Внутренний отступ карточки */
+    background-color: #f9f9f9; /* Лёгкий фон для красоты */
+    border-radius: 5px; /* Скруглённые углы */
+}
+
+.leak-item p {
+    margin: 0 0 5px 0; /* Отступ под заголовок */
+    font-weight: bold; /* Жирный шрифт для имени */
+}
+
+.leak-item pre {
+    margin: 0; /* Убираем отступы у pre */
+    white-space: pre-wrap; /* Перенос строк в данных */
+    font-size: 12px; /* Чуть меньше шрифт для данных */
+    max-height: 100px; /* Ограничиваем высоту текста внутри карточки */
+    overflow-y: auto; /* Внутренняя прокрутка для длинных данных */
+}
