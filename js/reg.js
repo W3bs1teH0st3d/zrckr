@@ -19,6 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return { success: false, message: 'Invalid input! Avoid <, >, ;, etc.' };
         }
 
+        // Проверяем уникальность username
         const { data: usernameCheck, error: usernameError } = await supabase
             .from('users')
             .select('username')
@@ -32,6 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return { success: false, message: 'Username already taken' };
         }
 
+        // Проверяем уникальность email
         const { data: emailCheck, error: emailError } = await supabase
             .from('users')
             .select('email')
@@ -45,6 +47,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return { success: false, message: 'Email already registered' };
         }
 
+        // Регистрация через Supabase Auth
         const { data: authData, error: authError } = await supabase.auth.signUp({
             email,
             password,
@@ -57,6 +60,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const userId = authData.user.id;
 
+        // Вставка в таблицу users после успешной регистрации
         const { error: dbError } = await supabase
             .from('users')
             .insert({
@@ -69,6 +73,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (dbError) {
             return { success: false, message: 'Database error: ' + dbError.message };
+        }
+
+        // Устанавливаем сессию вручную (если signUp не залогинил автоматически)
+        const { error: loginError } = await supabase.auth.signInWithPassword({
+            email,
+            password
+        });
+
+        if (loginError) {
+            return { success: false, message: 'Auto-login failed: ' + loginError.message };
         }
 
         document.cookie = `session_token=${userId}; max-age=31536000; path=/`;
