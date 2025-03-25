@@ -9,6 +9,18 @@ document.addEventListener('DOMContentLoaded', () => {
         'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlwZm9lYWNrZGV5emttcmt5dHd6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDI3ODc5OTQsImV4cCI6MjA1ODM2Mzk5NH0.WkCxdRT8sy6n9VH1owcDgnbCJzjgzm5P5OG1h86eRYg'
     );
 
+    // Функция получения IP клиента
+    async function getClientIp() {
+        try {
+            const response = await fetch('https://api.ipify.org?format=json');
+            const data = await response.json();
+            return data.ip;
+        } catch (error) {
+            console.error('Error fetching IP:', error);
+            return null;
+        }
+    }
+
     async function hashPassword(password) {
         const encoder = new TextEncoder();
         const data1 = encoder.encode(password);
@@ -31,6 +43,26 @@ document.addEventListener('DOMContentLoaded', () => {
     async function registerUser(username, email, password) {
         if (!sanitizeInput(username) || !sanitizeInput(email) || !sanitizeInput(password)) {
             return { success: false, message: 'Invalid input! Avoid <, >, ;, etc.' };
+        }
+
+        // Получаем IP клиента
+        const clientIp = await getClientIp();
+        if (!clientIp) {
+            return { success: false, message: 'Could not determine your IP address.' };
+        }
+
+        // Проверяем, есть ли уже аккаунт с этим IP
+        const { data: ipCheck, error: ipError } = await supabase
+            .from('users')
+            .select('ip_address')
+            .eq('ip_address', clientIp)
+            .single();
+
+        if (ipError && ipError.code !== 'PGRST116') {
+            return { success: false, message: 'Error checking IP: ' + ipError.message };
+        }
+        if (ipCheck) {
+            return { success: false, message: 'Only one account per IP is allowed!' };
         }
 
         const doubleHashedPassword = await hashPassword(password);
@@ -66,7 +98,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Генерируем свой ID
         const userId = crypto.randomUUID();
 
-        // Вставка в таблицу users
+        // Вставка в таблицу users с IP
         const { error: dbError } = await supabase
             .from('users')
             .insert({
@@ -74,6 +106,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 username,
                 email,
                 password: doubleHashedPassword,
+                ip_address: clientIp, // Добавляем IP в запись
                 subscription_status: 'Free Tier',
                 subscription_expiry: null
             });
