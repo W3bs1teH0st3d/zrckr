@@ -73,7 +73,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return { success: false, message: 'Invalid input! Avoid <, >, ;, etc.' };
         }
 
-        const fakeEmail = `${username.toLowerCase()}@zerocrackz.netlify`;
+        const fakeEmail = `${username.toLowerCase()}@gmail.com`;
 
         // Логин через Supabase Auth
         const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
