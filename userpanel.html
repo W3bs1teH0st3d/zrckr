@@ -38,7 +38,7 @@
                 <h2 id="username-display">Loading...</h2>
                 <p>Tier: <span id="subscription-display">Loading...</span></p>
                 <div id="sponsor-banner" class="sponsor-banner hidden">
-                    <p>Sponsor <3</p>
+                    <p>Sponsor Perk!</p>
                 </div>
             </div>
             <div class="tabs">
@@ -67,31 +67,23 @@
                 <div class="tab-pane" id="tools">
                     <h2>Private Tools</h2>
                     <div class="tool-item">
-                        <p>D0lbaebRAT - Client</p>
-                        <button class="download-btn" data-url="#">Soon</button>
+                        <p>ZeroR4t</p>
+                        <button class="download-btn" data-url="https://example.com/zeror4t">Download</button>
                     </div>
                     <div class="tool-item">
-                        <p>DoS</p>
-                        <button class="download-btn" data-url="#">Soon</button>
-                    </div>
-                    <div class="tool-item">
-                        <p>EWNRY - Doxxing</p>
-                        <button class="download-btn" data-url="#">Soon</button>
-                    </div>
-                    <div class="tool-item">
-                        <p>ZeroTiss V3</p>
-                        <button class="download-btn" data-url="#">Soon</button>
+                        <p>ZeroTiss Premium</p>
+                        <button class="download-btn" data-url="https://example.com/zerotiss-premium">Download</button>
                     </div>
                 </div>
                 <div class="tab-pane" id="cracks">
                     <h2>Private Cracks</h2>
                     <div class="crack-item">
-                        <p>AWP.GG Last</p>
-                        <button class="download-btn" data-url="#">Soon</button>
+                        <p>Crack #1</p>
+                        <button class="download-btn" data-url="https://example.com/crack1">Download</button>
                     </div>
                     <div class="crack-item">
                         <p>Crack #2</p>
-                        <button class="download-btn" data-url="#">Soon</button>
+                        <button class="download-btn" data-url="https://example.com/crack2">Download</button>
                     </div>
                 </div>
                 <div class="tab-pane" id="leaks">
@@ -139,13 +131,13 @@
                 return;
             }
 
-            // Проверка в базе
+            // Проверка в базе по id
             let userData;
             try {
                 const { data, error } = await supabase
                     .from('users')
-                    .select('username, subscription_status, subscription_expiry, client_hash')
-                    .eq('client_hash', sessionToken)
+                    .select('id, username, subscription_status, subscription_expiry')
+                    .eq('id', sessionToken)
                     .single();
 
                 if (error || !data) {
@@ -189,12 +181,16 @@
 
             function switchTab(tabId) {
                 tabs.forEach(tab => tab.classList.remove('active'));
-                panes.forEach(pane => pane.classList.remove('active'));
+                panes.forEach(pane => {
+                    pane.classList.remove('active');
+                    pane.style.opacity = '0';
+                });
                 const selectedTab = document.querySelector(`.tab-btn[data-tab="${tabId}"]`);
                 const selectedPane = document.getElementById(tabId);
                 if (selectedTab && selectedPane) {
                     selectedTab.classList.add('active');
                     selectedPane.classList.add('active');
+                    setTimeout(() => selectedPane.style.opacity = '1', 50);
                 }
             }
 
@@ -267,7 +263,9 @@
             // Download Buttons
             document.querySelectorAll('.download-btn').forEach(btn => {
                 btn.addEventListener('click', () => {
-                    window.open(btn.dataset.url, '_blank');
+                    if (!btn.classList.contains('disabled')) {
+                        window.open(btn.dataset.url, '_blank');
+                    }
                 });
             });
 
