@@ -13,15 +13,14 @@ document.addEventListener('DOMContentLoaded', async () => {
         return;
     }
 
-    // Проверка сессии Supabase Auth
-    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-    if (sessionError || !session) {
-        console.error('No active session:', sessionError?.message);
+    const sessionToken = document.cookie.split('; ')
+        .find(row => row.startsWith('session_token='))
+        ?.split('=')[1];
+
+    if (!sessionToken) {
         window.location.href = '/login.html';
         return;
     }
-
-    const sessionToken = session.user.id; // Используем ID пользователя из сессии
 
     let userData;
     try {
@@ -40,7 +39,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         console.error('Error fetching user:', err.message);
         offlineMessage.classList.remove('hidden');
         tabContent.classList.add('hidden');
-        await supabase.auth.signOut();
+        document.cookie = 'session_token=; max-age=0; path=/';
         window.location.href = '/login.html';
         return;
     }
@@ -165,11 +164,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         if (error) {
             console.error('Error loading special content:', error.message);
-            specialList.innerHTML = '<p>Error loading special content.</p>';
+            specialList.innerHTML = '<p style="color: var(--text-secondary); text-align: center;">Error loading special content.</p>';
             return;
         }
         if (!data || data.length === 0) {
-            specialList.innerHTML = '<p>No special content available yet.</p>';
+            specialList.innerHTML = '<p style="color: var(--text-secondary); text-align: center;">No special content available yet.</p>';
             return;
         }
 
@@ -247,7 +246,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('logout-btn').addEventListener('click', () => {
         document.cookie = 'session_token=; max-age=0; path=/';
         localStorage.removeItem('username');
-        supabase.auth.signOut();
         window.location.href = '/login.html';
     });
 
@@ -255,7 +253,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         e.preventDefault();
         document.cookie = 'session_token=; max-age=0; path=/';
         localStorage.removeItem('username');
-        supabase.auth.signOut();
         window.location.href = '/login.html';
     });
 
